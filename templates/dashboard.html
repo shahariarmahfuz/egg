@@ -1,0 +1,150 @@
+{% extends "layout.html" %}
+{% block content %}
+<h2 class="mb-4">Dashboard Summary</h2>
+<div class="row g-4">
+    <!-- Card 1 -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-primary text-white shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">Cash Sale</div>
+                        <div class="h5 mb-0 font-weight-bold">${{ '%.2f' % data.cash_sale }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-coins fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Card 2 -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-success text-white shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">Cash Purchase</div>
+                        <div class="h5 mb-0 font-weight-bold">${{ '%.2f' % data.cash_purchase }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-shopping-cart fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Card 3 -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-warning text-white shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">Sale Due</div>
+                        <div class="h5 mb-0 font-weight-bold">${{ '%.2f' % data.sale_due }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-file-invoice-dollar fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Card 4 -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-danger text-white shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">Purchase Due</div>
+                        <div class="h5 mb-0 font-weight-bold">${{ '%.2f' % data.purchase_due }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-file-invoice fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Card 5 -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-info text-white shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">Sale Return</div>
+                        <div class="h5 mb-0 font-weight-bold">${{ '%.2f' % data.sale_return }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-undo fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Card 6 -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-secondary text-white shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">Sale Income</div>
+                        <div class="h5 mb-0 font-weight-bold">${{ '%.2f' % data.sale_income }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-hand-holding-usd fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Card 7 -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-dark text-white shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">Return Due</div>
+                        <div class="h5 mb-0 font-weight-bold">${{ '%.2f' % data.return_due }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-receipt fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Card 8 -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-light text-dark shadow h-100 py-2 border-secondary">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">Expense</div>
+                        <div class="h5 mb-0 font-weight-bold">${{ '%.2f' % data.expense }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-money-bill-wave fa-2x text-secondary"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Card 9: Cash Out -->
+    <div class="col-xl-3 col-md-6">
+        <div class="card bg-primary text-white shadow h-100 py-2 border-primary">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-uppercase mb-1">Cash Out</div>
+                        <div class="h5 mb-0 font-weight-bold">${{ '%.2f' % data.cash_out }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-money-bill-wave fa-2x text-white-50"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

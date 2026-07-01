@@ -1,0 +1,279 @@
+from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
+from datetime import datetime
+import random
+import string
+
+db = SQLAlchemy()
+
+class Admin(UserMixin, db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    username = db.Column(db.String(150), unique=True, nullable=False)
+    password = db.Column(db.String(256), nullable=False)
+
+def generate_head_code():
+    return 'EH-' + ''.join(random.choices(string.digits, k=4))
+
+def generate_invoice_no():
+    return 'INV-' + ''.join(random.choices(string.digits, k=6))
+
+class ExpenseHead(db.Model):
+    __tablename__ = 'expense_heads'
+    id = db.Column(db.Integer, primary_key=True)
+    head_name = db.Column(db.String(100), unique=True, nullable=False)
+    head_code = db.Column(db.String(50), unique=True, nullable=False, default=generate_head_code)
+    created_date = db.Column(db.Date, default=datetime.utcnow().date)
+    entries = db.relationship('ExpenseEntry', backref='expense_head', lazy=True, cascade="all, delete-orphan")
+
+class ExpenseEntry(db.Model):
+    __tablename__ = 'expenses'
+    id = db.Column(db.Integer, primary_key=True)
+    invoice_no = db.Column(db.String(50), unique=True, nullable=False, default=generate_invoice_no)
+    expense_head_id = db.Column(db.Integer, db.ForeignKey('expense_heads.id'), nullable=False)
+    date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
+    comment = db.Column(db.Text, nullable=True)
+    amount = db.Column(db.Float, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class CashOut(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
+    type = db.Column(db.String(50), nullable=False)
+    comment = db.Column(db.String(255), nullable=True)
+    amount = db.Column(db.Float, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+def generate_supplier_code():
+    return 'SUP-' + ''.join(random.choices(string.digits, k=4))
+
+class Supplier(db.Model):
+    __tablename__ = 'suppliers'
+    id = db.Column(db.Integer, primary_key=True)
+    supplier_code = db.Column(db.String(50), unique=True, nullable=False, default=generate_supplier_code)
+    supplier_name = db.Column(db.String(100), unique=True, nullable=False)
+    address = db.Column(db.Text, nullable=True)
+    contact_number = db.Column(db.String(20), nullable=True)
+    previous_balance = db.Column(db.Float, default=0.0)
+    current_balance = db.Column(db.Float, default=0.0)
+    created_date = db.Column(db.Date, default=datetime.utcnow().date)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+class Product(db.Model):
+    __tablename__ = 'products'
+    id = db.Column(db.Integer, primary_key=True)
+    product_code = db.Column(db.String(50), unique=True, nullable=False)
+    product_name = db.Column(db.String(150), nullable=False)
+    unit = db.Column(db.String(20), default='Pcs')
+    cost_price = db.Column(db.Float, default=0.0)
+    selling_price = db.Column(db.Float, default=0.0)
+    current_stock = db.Column(db.Float, default=0.0)
+
+def generate_purchase_invoice():
+    return 'PUR-' + ''.join(random.choices(string.digits, k=6))
+
+class Purchase(db.Model):
+    __tablename__ = 'purchases'
+    id = db.Column(db.Integer, primary_key=True)
+    invoice_no = db.Column(db.String(50), unique=True, nullable=False, default=generate_purchase_invoice)
+    supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'), nullable=False)
+    purchase_date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
+    bill_number = db.Column(db.String(50), nullable=True)
+    transport_cost = db.Column(db.Float, default=0.0)
+    other_cost = db.Column(db.Float, default=0.0)
+    discount = db.Column(db.Float, default=0.0)
+    subtotal = db.Column(db.Float, default=0.0)
+    total_amount = db.Column(db.Float, default=0.0)
+    cash_paid = db.Column(db.Float, default=0.0)
+    due_amount = db.Column(db.Float, default=0.0)
+    payment_method = db.Column(db.String(20), default='Cash')
+    note = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    supplier = db.relationship('Supplier', backref='purchases', lazy=True)
+
+class PurchaseItem(db.Model):
+    __tablename__ = 'purchase_items'
+    id = db.Column(db.Integer, primary_key=True)
+    purchase_id = db.Column(db.Integer, db.ForeignKey('purchases.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    quantity = db.Column(db.Float, nullable=False)
+    purchase_price = db.Column(db.Float, nullable=False)
+    total_price = db.Column(db.Float, nullable=False)
+
+    purchase = db.relationship('Purchase', backref=db.backref('items', cascade="all, delete-orphan"), lazy=True)
+    product = db.relationship('Product', backref='purchase_items', lazy=True)
+
+def generate_return_invoice():
+    return 'PR-' + ''.join(random.choices(string.digits, k=6))
+
+class PurchaseReturn(db.Model):
+    __tablename__ = 'purchase_returns'
+    id = db.Column(db.Integer, primary_key=True)
+    return_invoice = db.Column(db.String(50), unique=True, nullable=False, default=generate_return_invoice)
+    purchase_id = db.Column(db.Integer, db.ForeignKey('purchases.id'), nullable=True)
+    supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'), nullable=False)
+    return_date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
+    transport_cost = db.Column(db.Float, default=0.0)
+    other_cost = db.Column(db.Float, default=0.0)
+    discount = db.Column(db.Float, default=0.0)
+    subtotal = db.Column(db.Float, default=0.0)
+    total_amount = db.Column(db.Float, default=0.0)
+    cash_refund = db.Column(db.Float, default=0.0)
+    due_adjustment = db.Column(db.Float, default=0.0)
+    payment_method = db.Column(db.String(20), default='Cash')
+    note = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    supplier = db.relationship('Supplier', backref='purchase_returns', lazy=True)
+    purchase = db.relationship('Purchase', backref='purchase_returns', lazy=True)
+
+class PurchaseReturnItem(db.Model):
+    __tablename__ = 'purchase_return_items'
+    id = db.Column(db.Integer, primary_key=True)
+    return_id = db.Column(db.Integer, db.ForeignKey('purchase_returns.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    quantity = db.Column(db.Float, nullable=False)
+    purchase_price = db.Column(db.Float, nullable=False)
+    total_price = db.Column(db.Float, nullable=False)
+
+    purchase_return = db.relationship('PurchaseReturn', backref=db.backref('items', cascade="all, delete-orphan"), lazy=True)
+    product = db.relationship('Product', backref='return_items', lazy=True)
+
+def generate_customer_code():
+    return 'CUST-' + ''.join(random.choices(string.digits, k=4))
+
+class Customer(db.Model):
+    __tablename__ = 'customers'
+    id = db.Column(db.Integer, primary_key=True)
+    customer_code = db.Column(db.String(50), unique=True, nullable=False, default=generate_customer_code)
+    customer_name = db.Column(db.String(100), nullable=False)
+    address = db.Column(db.Text, nullable=True)
+    contact_number = db.Column(db.String(20), nullable=True)
+    previous_balance = db.Column(db.Float, default=0.0)
+    current_balance = db.Column(db.Float, default=0.0)
+    created_date = db.Column(db.Date, default=datetime.utcnow().date)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+def generate_sale_invoice():
+    return 'INV-' + ''.join(random.choices(string.digits, k=6))
+
+class Sale(db.Model):
+    __tablename__ = 'sales'
+    id = db.Column(db.Integer, primary_key=True)
+    invoice_no = db.Column(db.String(50), unique=True, nullable=False, default=generate_sale_invoice)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
+    sale_date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
+    bill_number = db.Column(db.String(50), nullable=True)
+    transport_cost = db.Column(db.Float, default=0.0)
+    labour_cost = db.Column(db.Float, default=0.0)
+    vat = db.Column(db.Float, default=0.0)
+    discount = db.Column(db.Float, default=0.0)
+    subtotal = db.Column(db.Float, default=0.0)
+    total_amount = db.Column(db.Float, default=0.0)
+    cash_paid = db.Column(db.Float, default=0.0)
+    due_amount = db.Column(db.Float, default=0.0)
+    payment_method = db.Column(db.String(20), default='Cash')
+    note = db.Column(db.Text, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    
+    customer = db.relationship('Customer', backref='sales', lazy=True)
+
+class SaleItem(db.Model):
+    __tablename__ = 'sale_items'
+    id = db.Column(db.Integer, primary_key=True)
+    sale_id = db.Column(db.Integer, db.ForeignKey('sales.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    quantity = db.Column(db.Float, nullable=False)
+    selling_price = db.Column(db.Float, nullable=False)
+    cost_price = db.Column(db.Float, nullable=False)
+    profit = db.Column(db.Float, nullable=False)
+    total_price = db.Column(db.Float, nullable=False)
+
+    sale = db.relationship('Sale', backref=db.backref('items', cascade="all, delete-orphan"), lazy=True)
+    product = db.relationship('Product', backref='sale_items', lazy=True)
+
+class CustomerLedger(db.Model):
+    __tablename__ = 'customer_ledgers'
+    id = db.Column(db.Integer, primary_key=True)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
+    date = db.Column(db.Date, nullable=False)
+    invoice_no = db.Column(db.String(50), nullable=True)
+    description = db.Column(db.String(255), nullable=True)
+    debit = db.Column(db.Float, default=0.0)
+    credit = db.Column(db.Float, default=0.0)
+    balance = db.Column(db.Float, default=0.0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    customer = db.relationship('Customer', backref=db.backref('ledger_entries', cascade="all, delete-orphan"), lazy=True)
+
+def generate_sale_return_invoice():
+    return 'SR-' + ''.join(random.choices(string.digits, k=6))
+
+class SaleReturn(db.Model):
+    __tablename__ = 'sale_returns'
+    id = db.Column(db.Integer, primary_key=True)
+    return_invoice = db.Column(db.String(50), unique=True, nullable=False, default=generate_sale_return_invoice)
+    sale_invoice = db.Column(db.String(50), nullable=True)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
+    date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
+    subtotal = db.Column(db.Float, default=0.0)
+    discount = db.Column(db.Float, default=0.0)
+    paid = db.Column(db.Float, default=0.0)
+    due = db.Column(db.Float, default=0.0)
+    payment_method = db.Column(db.String(50), default='Cash')
+    note = db.Column(db.Text, nullable=True)
+    created_by = db.Column(db.Integer, db.ForeignKey('admin.id'), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    customer = db.relationship('Customer', backref='sale_returns', lazy=True)
+    admin = db.relationship('Admin', backref='sale_returns', lazy=True)
+
+class SaleReturnItem(db.Model):
+    __tablename__ = 'sale_return_items'
+    id = db.Column(db.Integer, primary_key=True)
+    return_id = db.Column(db.Integer, db.ForeignKey('sale_returns.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    quantity = db.Column(db.Float, nullable=False)
+    price = db.Column(db.Float, nullable=False)
+    total = db.Column(db.Float, nullable=False)
+
+    sale_return = db.relationship('SaleReturn', backref=db.backref('items', cascade="all, delete-orphan"), lazy=True)
+    product = db.relationship('Product', backref='sale_return_items', lazy=True)
+
+def generate_collection_voucher():
+    return 'COL-' + ''.join(random.choices(string.digits, k=6))
+
+class CustomerCollection(db.Model):
+    __tablename__ = 'customer_collections'
+    id = db.Column(db.Integer, primary_key=True)
+    voucher_no = db.Column(db.String(50), unique=True, nullable=False, default=generate_collection_voucher)
+    customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
+    date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
+    previous_due = db.Column(db.Float, default=0.0)
+    discount = db.Column(db.Float, default=0.0)
+    cash_paid = db.Column(db.Float, default=0.0)
+    balance = db.Column(db.Float, default=0.0)
+    payment_method = db.Column(db.String(50), default='Cash')
+    bank_name = db.Column(db.String(100), nullable=True)
+    cheque_number = db.Column(db.String(100), nullable=True)
+    note = db.Column(db.Text, nullable=True)
+    created_by = db.Column(db.Integer, db.ForeignKey('admin.id'), nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    customer = db.relationship('Customer', backref=db.backref('collections', cascade="all, delete-orphan"), lazy=True)
+    admin = db.relationship('Admin', backref='collections', lazy=True)
+
+class CashLedger(db.Model):
+    __tablename__ = 'cash_ledgers'
+    id = db.Column(db.Integer, primary_key=True)
+    voucher_no = db.Column(db.String(50), nullable=True)
+    description = db.Column(db.String(255), nullable=True)
+    amount = db.Column(db.Float, default=0.0)
+    type = db.Column(db.String(20), nullable=False) # 'In' or 'Out'
+    date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
+    running_balance = db.Column(db.Float, default=0.0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+

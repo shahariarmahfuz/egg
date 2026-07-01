@@ -1,0 +1,213 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3 bg-white">
+        <h6 class="m-0 font-weight-bold text-primary">{{ action }} Purchase Return</h6>
+    </div>
+    <div class="card-body">
+        <form method="POST" id="purchaseReturnForm">
+            <!-- Search Invoice -->
+            <h5 class="mb-3 border-bottom pb-2">Load Purchase</h5>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <div class="input-group">
+                        <input type="text" class="form-control" id="search_invoice" placeholder="Enter Purchase Invoice No">
+                        <button class="btn btn-outline-primary" type="button" id="btn_search_invoice">Load Items</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Supplier Info -->
+            <h5 class="mb-3 border-bottom pb-2">Supplier Information</h5>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="supplier_id" class="form-label">Supplier <span class="text-danger">*</span></label>
+                    <select class="form-select select2" id="supplier_id" name="supplier_id" required>
+                        <option value="" disabled selected>Select Supplier</option>
+                        {% for sup in suppliers %}
+                        <option value="{{ sup.id }}">{{ sup.supplier_name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Address</label>
+                    <input type="text" class="form-control" id="sup_address" readonly disabled>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Contact Number</label>
+                    <input type="text" class="form-control" id="sup_contact" readonly disabled>
+                </div>
+                <div class="col-md-3">
+                    <label for="purchase_invoice" class="form-label">Purchase Invoice Number</label>
+                    <input type="text" class="form-control" id="purchase_invoice" name="purchase_invoice" readonly>
+                </div>
+            </div>
+
+            <div class="table-responsive mb-4 mt-4">
+                <table class="table table-bordered table-sm" id="returnTable">
+                    <thead class="table-dark">
+                        <tr>
+                            <th>Product Code</th>
+                            <th>Product Name</th>
+                            <th>Max Returnable</th>
+                            <th>Return Quantity</th>
+                            <th>Purchase Price</th>
+                            <th>Total</th>
+                            <th>Current Stock</th>
+                            <th class="text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="product_rows">
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <td colspan="5" class="text-end fw-bold">Line Total:</td>
+                            <td><input type="text" class="form-control form-control-sm" id="subtotal" name="subtotal" readonly value="0.00"></td>
+                            <td colspan="2"></td>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div>
+
+            <!-- Bottom Section -->
+            <h5 class="mb-3 border-bottom pb-2 mt-4">Payment & Summary</h5>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="return_date" class="form-label">Return Date</label>
+                    <input type="date" class="form-control" id="return_date" name="return_date" required>
+                </div>
+                <div class="col-md-3">
+                    <label for="payment_method" class="form-label">Payment Method</label>
+                    <select class="form-select" id="payment_method" name="payment_method">
+                        <option value="Cash">Cash</option>
+                        <option value="Due">Due</option>
+                    </select>
+                </div>
+                <div class="col-md-6">
+                    <label for="note" class="form-label">Note</label>
+                    <input type="text" class="form-control" id="note" name="note">
+                </div>
+            </div>
+            
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="transport_cost" class="form-label">Transport Cost</label>
+                    <input type="number" step="0.01" min="0" class="form-control calc-input" id="transport_cost" name="transport_cost" value="0">
+                </div>
+                <div class="col-md-3">
+                    <label for="other_cost" class="form-label">Other Cost</label>
+                    <input type="number" step="0.01" min="0" class="form-control calc-input" id="other_cost" name="other_cost" value="0">
+                </div>
+                <div class="col-md-3">
+                    <label for="discount" class="form-label">Discount</label>
+                    <input type="number" step="0.01" min="0" class="form-control calc-input" id="discount" name="discount" value="0">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label fw-bold text-danger">Grand Total</label>
+                    <input type="text" class="form-control fw-bold" id="grand_total" readonly value="0.00">
+                </div>
+            </div>
+
+            <div class="row mb-4">
+                <div class="col-md-3 offset-md-6">
+                    <label for="cash_refund" class="form-label text-success fw-bold">Cash Refund</label>
+                    <input type="number" step="0.01" min="0" class="form-control calc-input fw-bold" id="cash_refund" name="cash_refund" value="0">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label text-danger fw-bold">Due Adjustment</label>
+                    <input type="text" class="form-control fw-bold" id="due_adjustment" readonly value="0.00">
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary btn-lg"><i class="fas fa-save"></i> Submit Return</button>
+            <button type="button" class="btn btn-secondary btn-lg" onclick="location.reload();">Reset</button>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<link href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css" rel="stylesheet" />
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+$(document).ready(function() {
+    document.getElementById('return_date').valueAsDate = new Date();
+    $('.select2').select2({ theme: 'bootstrap-5' });
+
+    $('#supplier_id').on('change', function() {
+        let supId = $(this).val();
+        if(supId) {
+            $.get('/purchase/api/get_supplier/' + supId, function(data) {
+                $('#sup_address').val(data.address);
+                $('#sup_contact').val(data.contact);
+            });
+        }
+    });
+
+    $('#btn_search_invoice').click(function() {
+        let inv = $('#search_invoice').val();
+        if(!inv) return;
+        $.get('/purchase_return/api/get_purchase/' + inv, function(data) {
+            if(data.error) {
+                alert(data.error);
+                return;
+            }
+            $('#supplier_id').val(data.supplier_id).trigger('change');
+            $('#purchase_invoice').val(inv);
+            
+            $('#product_rows').empty();
+            data.items.forEach(function(item) {
+                var row = `
+                <tr>
+                    <td><input type="hidden" name="product_id[]" value="${item.product_id}">${item.code}</td>
+                    <td>${item.name}</td>
+                    <td>${item.max_qty}</td>
+                    <td><input type="number" step="0.01" min="0" max="${item.max_qty}" class="form-control form-control-sm qty-input" name="quantity[]" value="${item.max_qty}" required></td>
+                    <td><input type="number" step="0.01" min="0.01" class="form-control form-control-sm price-input" name="price[]" value="${item.price}" readonly required></td>
+                    <td><input type="text" class="form-control form-control-sm row-total" readonly value="0.00"></td>
+                    <td>${item.stock}</td>
+                    <td class="text-center"><button type="button" class="btn btn-danger btn-sm remove-row"><i class="fas fa-times"></i></button></td>
+                </tr>`;
+                $('#product_rows').append(row);
+            });
+            calculateTotals();
+        });
+    });
+
+    $(document).on('click', '.remove-row', function() {
+        $(this).closest('tr').remove();
+        calculateTotals();
+    });
+
+    $(document).on('input', '.qty-input, .price-input, .calc-input', function() { calculateTotals(); });
+    $('#payment_method').on('change', function() { calculateTotals(); });
+
+    function calculateTotals() {
+        let subtotal = 0;
+        $('#product_rows tr').each(function() {
+            let qty = parseFloat($(this).find('.qty-input').val()) || 0;
+            let price = parseFloat($(this).find('.price-input').val()) || 0;
+            let total = qty * price;
+            $(this).find('.row-total').val(total.toFixed(2));
+            subtotal += total;
+        });
+        $('#subtotal').val(subtotal.toFixed(2));
+
+        let transport = parseFloat($('#transport_cost').val()) || 0;
+        let other = parseFloat($('#other_cost').val()) || 0;
+        let discount = parseFloat($('#discount').val()) || 0;
+        let grandTotal = subtotal + transport + other - discount;
+        $('#grand_total').val(grandTotal.toFixed(2));
+
+        let isCash = $('#payment_method').val() === 'Cash';
+        if(isCash) { $('#cash_refund').val(grandTotal.toFixed(2)); }
+
+        let refund = parseFloat($('#cash_refund').val()) || 0;
+        let due = grandTotal - refund;
+        if(due < 0) due = 0;
+        $('#due_adjustment').val(due.toFixed(2));
+    }
+});
+</script>
+{% endblock %}

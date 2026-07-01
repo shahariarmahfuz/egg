@@ -1,0 +1,48 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3 bg-white">
+        <h6 class="m-0 font-weight-bold text-primary">{{ action }} Cash Out</h6>
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="date" class="form-label">Date <span class="text-danger">*</span></label>
+                    <input type="date" class="form-control" id="date" name="date" required 
+                           value="{{ record.date.strftime('%Y-%m-%d') if record else '' }}" >
+                </div>
+                <div class="col-md-6">
+                    <label for="type" class="form-label">Type <span class="text-danger">*</span></label>
+                    <select class="form-select" id="type" name="type" required>
+                        <option value="Cash Out" {% if record and record.type == 'Cash Out' %}selected{% endif %}>Cash Out</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="amount" class="form-label">Amount <span class="text-danger">*</span></label>
+                    <input type="number" step="0.01" min="0.01" class="form-control" id="amount" name="amount" required value="{{ record.amount if record else '' }}">
+                </div>
+                <div class="col-md-6">
+                    <label for="comment" class="form-label">Comment</label>
+                    <input type="text" class="form-control" id="comment" name="comment" value="{{ record.comment if record else '' }}">
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">{{ action }}</button>
+            <button type="reset" class="btn btn-secondary">Reset</button>
+            <a href="{{ url_for('cash_out.manage') }}" class="btn btn-link">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        {% if not record %}
+        document.getElementById('date').valueAsDate = new Date();
+        {% endif %}
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,94 @@
+body {
+    overflow-x: hidden;
+}
+
+#wrapper {
+    min-height: 100vh;
+}
+
+#sidebar-wrapper {
+    min-height: 100vh;
+    width: 250px;
+    transition: margin 0.25s ease-out;
+}
+
+#sidebar-wrapper .sidebar-heading {
+    padding: 0.875rem 1.25rem;
+    font-size: 1.2rem;
+}
+
+#sidebar-wrapper .list-group {
+    width: 250px;
+}
+
+#page-content-wrapper {
+    min-width: 100vw;
+}
+
+body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
+    margin-left: -250px;
+}
+
+@media (min-width: 768px) {
+    #sidebar-wrapper {
+        margin-left: 0;
+    }
+    #page-content-wrapper {
+        min-width: 0;
+        width: 100%;
+    }
+    body.sb-sidenav-toggled #wrapper #sidebar-wrapper {
+        margin-left: -250px;
+    }
+}
+
+.text-white-50 {
+    color: rgba(255, 255, 255, 0.5) !important;
+}
+
+.text-xs {
+    font-size: .8rem;
+}
+
+/* Sidebar Accordion Customizations */
+.accordion-button::after {
+    filter: invert(1);
+    transform: scale(0.8);
+}
+.accordion-button:not(.collapsed) {
+    background-color: #1a1e21;
+    color: white;
+    box-shadow: none;
+}
+.accordion-button:focus {
+    box-shadow: none;
+}
+.accordion-item {
+    background-color: transparent;
+}
+a.accordion-button::after {
+    display: none;
+}
+.active-menu {
+    background-color: #2b3035 !important;
+    color: #0dcaf0 !important;
+    font-weight: bold;
+}
+.active-menu i {
+    color: #0dcaf0 !important;
+}
+
+#sidebar-wrapper {
+    scrollbar-width: thin;
+    scrollbar-color: #495057 #212529;
+}
+#sidebar-wrapper::-webkit-scrollbar {
+    width: 6px;
+}
+#sidebar-wrapper::-webkit-scrollbar-track {
+    background: #212529;
+}
+#sidebar-wrapper::-webkit-scrollbar-thumb {
+    background-color: #495057;
+    border-radius: 10px;
+}

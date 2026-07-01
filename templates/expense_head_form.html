@@ -1,0 +1,44 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3 bg-white">
+        <h6 class="m-0 font-weight-bold text-primary">{{ action }} Expense Head</h6>
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="head_name" class="form-label">Head Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="head_name" name="head_name" required value="{{ head.head_name if head else '' }}">
+                </div>
+                <div class="col-md-6">
+                    <label for="date" class="form-label">Date</label>
+                    <input type="date" class="form-control" id="date" name="date" 
+                           value="{{ head.created_date.strftime('%Y-%m-%d') if head else '' }}">
+                </div>
+            </div>
+            {% if head %}
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label">Head Code (Auto Generated)</label>
+                    <input type="text" class="form-control" value="{{ head.head_code }}" disabled>
+                </div>
+            </div>
+            {% endif %}
+            
+            <button type="submit" class="btn btn-primary">{{ action }} Expense Head</button>
+            <button type="reset" class="btn btn-secondary">Reset</button>
+            <a href="{{ url_for('expenses.manage_expense_head') }}" class="btn btn-link">Cancel</a>
+        </form>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        {% if not head %}
+        document.getElementById('date').valueAsDate = new Date();
+        {% endif %}
+    });
+</script>
+{% endblock %}

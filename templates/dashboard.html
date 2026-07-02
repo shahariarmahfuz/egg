@@ -129,22 +129,7 @@
 
 </div>
 
-<!-- Third Row: Cash Out card -->
-{% if current_user.role == 'Admin' %}
-<div class="row g-4 mb-4">
-    <div class="col-xl-3 col-sm-6">
-        <div class="stat-card-gradient bg-gradient-indigo">
-            <i class="fas fa-wallet gradient-bg-icon"></i>
-            <div class="d-flex align-items-center justify-content-between mb-3">
-                <div class="gradient-icon"><i class="fas fa-wallet"></i></div>
-            </div>
-            <div class="card-label">Cash Out</div>
-            <div class="card-value">৳ {{ '{:,.2f}'.format(data.cash_out) }}</div>
-            <div class="card-sub">Total Cash Out</div>
-        </div>
-    </div>
-</div>
-{% endif %}
+
 
 {% endblock %}
 {% block scripts %}

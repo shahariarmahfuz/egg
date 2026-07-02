@@ -73,10 +73,17 @@ class Product(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     product_code = db.Column(db.String(50), unique=True, nullable=False)
     product_name = db.Column(db.String(150), nullable=False)
+    category = db.Column(db.String(100), nullable=True)
+    brand = db.Column(db.String(100), nullable=True)
     unit = db.Column(db.String(20), default='Pcs')
     cost_price = db.Column(db.Float, default=0.0)
     selling_price = db.Column(db.Float, default=0.0)
+    opening_stock = db.Column(db.Float, default=0.0)
     current_stock = db.Column(db.Float, default=0.0)
+    min_stock_alert = db.Column(db.Float, default=0.0)
+    barcode = db.Column(db.String(100), nullable=True)
+    description = db.Column(db.Text, nullable=True)
+    status = db.Column(db.String(20), default='Active')
 
 def generate_purchase_invoice():
     return 'PUR-' + ''.join(random.choices(string.digits, k=6))

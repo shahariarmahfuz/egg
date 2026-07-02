@@ -1,0 +1,82 @@
+{% extends "layout.html" %}
+{% block content %}
+<div class="card shadow mb-4">
+    <div class="card-header py-3 bg-white">
+        <h6 class="m-0 font-weight-bold text-primary">Add Product</h6>
+    </div>
+    <div class="card-body">
+        <form method="POST">
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label class="form-label text-muted">Product Code</label>
+                    <input type="text" class="form-control" placeholder="Auto Generate" disabled readonly>
+                </div>
+                <div class="col-md-6">
+                    <label for="product_name" class="form-label">Product Name <span class="text-danger">*</span></label>
+                    <input type="text" class="form-control" id="product_name" name="product_name" required>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-4">
+                    <label for="category" class="form-label">Category</label>
+                    <input type="text" class="form-control" id="category" name="category">
+                </div>
+                <div class="col-md-4">
+                    <label for="brand" class="form-label">Brand</label>
+                    <input type="text" class="form-control" id="brand" name="brand">
+                </div>
+                <div class="col-md-4">
+                    <label for="unit" class="form-label">Unit</label>
+                    <select class="form-select form-control" id="unit" name="unit">
+                        <option value="Pcs">Pcs</option>
+                        <option value="Kg">Kg</option>
+                        <option value="Ltr">Ltr</option>
+                        <option value="Box">Box</option>
+                        <option value="Dozen">Dozen</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="cost_price" class="form-label">Purchase Price</label>
+                    <input type="number" step="0.01" min="0" class="form-control" id="cost_price" name="cost_price" value="0.00">
+                </div>
+                <div class="col-md-3">
+                    <label for="selling_price" class="form-label">Selling Price</label>
+                    <input type="number" step="0.01" min="0" class="form-control" id="selling_price" name="selling_price" value="0.00">
+                </div>
+                <div class="col-md-3">
+                    <label for="opening_stock" class="form-label">Opening Stock</label>
+                    <input type="number" step="0.01" min="0" class="form-control" id="opening_stock" name="opening_stock" value="0">
+                </div>
+                <div class="col-md-3">
+                    <label for="min_stock_alert" class="form-label">Minimum Stock Alert</label>
+                    <input type="number" step="0.01" min="0" class="form-control" id="min_stock_alert" name="min_stock_alert" value="0">
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-6">
+                    <label for="barcode" class="form-label">Barcode (Optional)</label>
+                    <input type="text" class="form-control" id="barcode" name="barcode">
+                </div>
+                <div class="col-md-6">
+                    <label for="status" class="form-label">Status</label>
+                    <select class="form-select form-control" id="status" name="status">
+                        <option value="Active">Active</option>
+                        <option value="Inactive">Inactive</option>
+                    </select>
+                </div>
+            </div>
+            <div class="row mb-3">
+                <div class="col-md-12">
+                    <label for="description" class="form-label">Description</label>
+                    <textarea class="form-control" id="description" name="description" rows="2"></textarea>
+                </div>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Save Product</button>
+            <button type="reset" class="btn btn-secondary">Reset</button>
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -100,6 +100,26 @@
                         </div>
                     </div>
 
+                    <!-- Product -->
+                    {% if current_user.role == 'Admin' %}
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed d-flex align-items-center" type="button" data-bs-toggle="collapse" data-bs-target="#collapseProduct" aria-expanded="{% if 'product.' in request.endpoint %}true{% else %}false{% endif %}">
+                                <i class="fas fa-box me-3" style="width:20px;"></i>
+                                <span>Product</span>
+                            </button>
+                        </h2>
+                        <div id="collapseProduct" class="accordion-collapse collapse {% if 'product.' in request.endpoint %}show{% endif %}" data-bs-parent="#sidebarAccordion">
+                            <div class="accordion-body p-0">
+                                <div class="list-group list-group-flush">
+                                    <a href="{{ url_for('product.add_product') }}" class="list-group-item list-group-item-action {{ 'active-menu' if request.endpoint == 'product.add_product' else '' }}"><i class="fa-solid fa-caret-right me-2"></i>Add Product</a>
+                                    <a href="{{ url_for('product.manage_product') }}" class="list-group-item list-group-item-action {{ 'active-menu' if request.endpoint == 'product.manage_product' else '' }}"><i class="fa-solid fa-caret-right me-2"></i>Manage Product</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endif %}
+
                     <!-- Purchase -->
                     <div class="accordion-item">
                         <h2 class="accordion-header">

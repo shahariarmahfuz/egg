@@ -37,6 +37,7 @@ def create_app():
     from customer_collection import customer_collection_bp
     from account_reports import account_reports_bp
     from users import users_bp
+    from product import product_bp
 
     app.register_blueprint(cash_out_bp)
     app.register_blueprint(supplier_bp)
@@ -48,6 +49,7 @@ def create_app():
     app.register_blueprint(customer_collection_bp)
     app.register_blueprint(account_reports_bp)
     app.register_blueprint(users_bp, url_prefix='/users')
+    app.register_blueprint(product_bp)
 
     with app.app_context():
         db.create_all()

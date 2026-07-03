@@ -25,25 +25,18 @@ def add_user():
     if request.method == 'POST':
         name = request.form.get('name')
         username = request.form.get('username')
-        email = request.form.get('email')
-        phone = request.form.get('phone')
         role = request.form.get('role')
         password = request.form.get('password')
         
-        # Check if username or email exists
+        # Check if username exists
         if Admin.query.filter_by(username=username).first():
             flash('Username already exists.', 'danger')
-            return redirect(url_for('users.add_user'))
-        if email and Admin.query.filter_by(email=email).first():
-            flash('Email already exists.', 'danger')
             return redirect(url_for('users.add_user'))
             
         hashed_pw = generate_password_hash(password)
         new_user = Admin(
             name=name,
             username=username,
-            email=email,
-            phone=phone,
             role=role,
             password=hashed_pw,
             status='Active',
@@ -71,8 +64,6 @@ def edit_user(id):
     user = Admin.query.get_or_404(id)
     if request.method == 'POST':
         user.name = request.form.get('name')
-        user.email = request.form.get('email')
-        user.phone = request.form.get('phone')
         user.role = request.form.get('role')
         user.status = request.form.get('status')
         

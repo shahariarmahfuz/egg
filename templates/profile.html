@@ -21,14 +21,6 @@
                         <p class="mb-0 fw-semibold">{{ current_user.username }}</p>
                     </div>
                     <div class="col-md-6 mb-3">
-                        <label class="text-muted fw-bold text-xs">EMAIL</label>
-                        <p class="mb-0 fw-semibold">{{ current_user.email or 'N/A' }}</p>
-                    </div>
-                    <div class="col-md-6 mb-3">
-                        <label class="text-muted fw-bold text-xs">PHONE</label>
-                        <p class="mb-0 fw-semibold">{{ current_user.phone or 'N/A' }}</p>
-                    </div>
-                    <div class="col-md-6 mb-3">
                         <label class="text-muted fw-bold text-xs">JOINING DATE</label>
                         <p class="mb-0 fw-semibold">{{ current_user.created_at.strftime('%B %d, %Y') if current_user.created_at else 'N/A' }}</p>
                     </div>

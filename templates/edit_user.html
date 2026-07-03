@@ -20,14 +20,6 @@
                         <input type="text" class="form-control" value="{{ user.username }}" readonly>
                     </div>
                     <div class="mb-3">
-                        <label class="form-label text-muted fw-bold text-xs">EMAIL</label>
-                        <input type="email" name="email" class="form-control" value="{{ user.email or '' }}">
-                    </div>
-                    <div class="mb-3">
-                        <label class="form-label text-muted fw-bold text-xs">PHONE NUMBER</label>
-                        <input type="text" name="phone" class="form-control" value="{{ user.phone or '' }}">
-                    </div>
-                    <div class="mb-3">
                         <label class="form-label text-muted fw-bold text-xs">ROLE</label>
                         <select name="role" class="form-select" required>
                             <option value="Employee" {% if user.role == 'Employee' %}selected{% endif %}>Employee</option>

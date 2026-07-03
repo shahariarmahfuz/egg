@@ -1,16 +1,16 @@
-{% extends "layout.html" %}
+{% extends "base.html" %}
 {% block content %}
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Supplier Ledger</h1>
 </div>
 
 <!-- Filters -->
-<div class="card shadow mb-4">
-    <div class="card-header py-3 bg-white">
+<div class="mb-4">
+    <div class="mb-3 py-3">
         <h6 class="m-0 font-weight-bold text-primary">Filter Ledger</h6>
     </div>
-    <div class="card-body">
-        <form method="GET" action="{{ url_for('supplier.supplier_ledger') }}">
+    <div class="">
+        <div class="compact-filter"><form method="GET" action="{{ url_for('supplier.supplier_ledger') }}">
             <div class="row g-3 align-items-end">
                 <div class="col-md-3">
                     <label for="supplier_id" class="form-label">Supplier <span class="text-danger">*</span></label>
@@ -34,16 +34,16 @@
                     <a href="{{ url_for('supplier.supplier_ledger') }}" class="btn btn-secondary"><i class="fas fa-undo me-1"></i> Reset</a>
                 </div>
             </div>
-        </form>
+        </form></div>
     </div>
 </div>
 
 {% if supplier %}
-<div class="card shadow mb-4">
-    <div class="card-header py-3 bg-white d-flex justify-content-between align-items-center">
+<div class="mb-4">
+    <div class="mb-3 py-3 d-flex justify-content-between align-items-center">
         <h6 class="m-0 font-weight-bold text-primary">Ledger for: {{ supplier.supplier_name }}</h6>
     </div>
-    <div class="card-body">
+    <div class="">
         <div class="row mb-4">
             <div class="col-md-4">
                 <div class="p-3 bg-light border rounded">
@@ -75,11 +75,6 @@
                     </tr>
                 </thead>
                 <tbody>
-                    {% if not ledger_data %}
-                    <tr>
-                        <td colspan="6" class="text-center text-muted">No transactions found for the selected period.</td>
-                    </tr>
-                    {% endif %}
                     {% for row in ledger_data %}
                     <tr>
                         <td>{{ row.date }}</td>

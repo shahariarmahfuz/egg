@@ -106,13 +106,13 @@ a.accordion-button::after { display: none; }
   background: transparent !important;
   color: #94a3b8 !important;
   border: none !important;
-  padding: 0.45rem 0.75rem 0.45rem 2.8rem !important;
+  padding: 0.45rem 0.75rem 0.45rem 1.5rem !important;
   font-size: 0.82rem;
   transition: all 0.2s ease;
 }
 .accordion-body .list-group-item:hover {
   color: #818cf8 !important;
-  padding-left: 3rem !important;
+  padding-left: 1.7rem !important;
 }
 
 /* Sidebar Desktop UI Fixes */
@@ -468,3 +468,8 @@ body.sb-sidenav-toggled #page-content-wrapper {
 /* Utility */
 .text-white-50 { color: rgba(255,255,255,0.5) !important; }
 .text-xs { font-size: 0.8rem; }
+
+/* Compact Filter Section */
+.compact-filter .form-label { font-size: 12px; margin-bottom: 2px; font-weight: 600; color: #475569; }
+.compact-filter .form-control, .compact-filter .form-select, .compact-filter .btn { height: 34px !important; font-size: 13px !important; padding: 0.25rem 0.5rem !important; line-height: 1.5; border-radius: 4px !important; }
+.compact-filter .btn { display: inline-flex; align-items: center; justify-content: center; }

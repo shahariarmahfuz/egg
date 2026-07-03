@@ -1,45 +1,15 @@
-{% extends "layout.html" %}
+{% extends "base.html" %}
 {% block content %}
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Sale Report</h1>
 </div>
 
-<style>
-    /* Compact Filter Section */
-    .compact-filter .card-header {
-        padding: 0.5rem 1rem !important;
-    }
-    .compact-filter .card-body {
-        padding: 0.75rem 1rem !important;
-    }
-    .compact-filter .form-label {
-        font-size: 12px;
-        margin-bottom: 2px;
-        font-weight: 600;
-        color: #475569;
-    }
-    .compact-filter .form-control, 
-    .compact-filter .form-select, 
-    .compact-filter .btn {
-        height: 34px !important;
-        font-size: 13px !important;
-        padding: 0.25rem 0.5rem !important;
-        line-height: 1.5;
-        border-radius: 4px !important;
-    }
-    .compact-filter .btn {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-    }
-</style>
-
-<div class="card shadow mb-3 compact-filter">
-    <div class="card-header bg-white">
+<div class="mb-3 compact-filter">
+    <div class="mb-3">
         <h6 class="m-0 font-weight-bold text-primary" style="font-size: 13px;">Filter Reports</h6>
     </div>
-    <div class="card-body">
-        <form method="GET" action="{{ url_for('sale.sale_report') }}">
+    <div class="">
+        <div class="compact-filter"><form method="GET" action="{{ url_for('sale.sale_report') }}">
             <div class="row g-2 align-items-end">
                 <div class="col-md-2">
                     <label for="from_date" class="form-label">From Date</label>
@@ -67,7 +37,7 @@
                     <a href="{{ url_for('sale.sale_report') }}" class="btn btn-secondary"><i class="fas fa-undo me-1"></i> Reset</a>
                 </div>
             </div>
-        </form>
+        </form></div>
     </div>
 </div>
 
@@ -77,14 +47,14 @@
             <tr>
                 <th>Invoice</th>
                 <th>Date</th>
-                <th>Customer</th>
-                <th>Total</th>
-                <th>VAT</th>
-                <th>Labour</th>
-                <th>Discount</th>
-                <th>Paid</th>
-                <th>Due</th>
-                <th>Profit</th>
+                <th style="width: 25%;">Customer</th>
+                <th style="width: 1%; white-space: nowrap;">Total</th>
+                <th style="width: 1%; white-space: nowrap;">VAT</th>
+                <th style="width: 1%; white-space: nowrap;">Labour</th>
+                <th style="width: 1%; white-space: nowrap;">Discount</th>
+                <th style="width: 1%; white-space: nowrap;">Paid</th>
+                <th style="width: 1%; white-space: nowrap;">Due</th>
+                <th style="width: 1%; white-space: nowrap;">Profit</th>
                 <th>Method</th>
                 <th style="width: 1%; white-space: nowrap;">Action</th>
             </tr>
@@ -104,8 +74,8 @@
                 <td >৳{{ '%.2f' % (s.items|sum(attribute='profit')) }}</td>
                 <td><span class="badge {% if s.payment_method == 'Cash' %}bg-success{% else %}bg-danger{% endif %}">{{ s.payment_method }}</span></td>
                 <td>
-                    <a href="{{ url_for('sale.print_invoice', id=s.id) }}" class="btn btn-primary btn-sm mb-1" target="_blank" title="Print Invoice"><i class="fas fa-file-invoice"></i></a>
-                    <a href="{{ url_for('sale.print_truck_challan', id=s.id) }}" class="btn btn-info btn-sm mb-1 text-white" target="_blank" title="Print Truck Challan"><i class="fas fa-truck"></i></a>
+                    <a href="{{ url_for('sale.print_invoice', id=s.id) }}" class="btn btn-primary btn-sm mb-1" onclick="return popupPrint(this.href);" title="Print Invoice"><i class="fas fa-file-invoice"></i></a>
+                    <a href="{{ url_for('sale.print_truck_challan', id=s.id) }}" class="btn btn-info btn-sm mb-1 text-white" onclick="return popupPrint(this.href);" title="Print Truck Challan"><i class="fas fa-truck"></i></a>
                 </td>
             </tr>
             {% endfor %}

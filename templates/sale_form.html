@@ -1,10 +1,10 @@
-{% extends "layout.html" %}
+{% extends "base.html" %}
 {% block content %}
-<div class="card shadow mb-4">
-    <div class="card-header py-3 bg-white">
+<div class="mb-4">
+    <div class="mb-3 py-3">
         <h6 class="m-0 font-weight-bold text-primary">{{ action }} Sale</h6>
     </div>
-    <div class="card-body">
+    <div class="">
         <form method="POST" id="saleForm">
             <h5 class="mb-3 border-bottom pb-2">Customer Information</h5>
             <div class="row mb-3">
@@ -58,7 +58,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="5" class="text-end ">Line Total:</td>
+                            <td colspan="5" class="text-end">Line Total:</td>
                             <td><input type="text" class="form-control form-control-sm fw-bold" id="subtotal" name="subtotal" readonly value="0.00"></td>
                             <td></td>
                         </tr>
@@ -151,7 +151,7 @@ $(document).ready(function() {
         placeholder: 'Scan Barcode or Search Product...',
         minimumInputLength: 1,
         ajax: {
-            url: '/sale/api/search_product',
+            url: '{{ url_for("sale.search_product") }}',
             dataType: 'json',
             delay: 250,
             data: function (params) { return { q: params.term }; },

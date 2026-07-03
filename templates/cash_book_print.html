@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cash Statement - Bhai Bhai Agency</title>
+    <style>
+        /* প্রিন্টের সময় ডিফল্ট পেজ সাইজ A4 সেট করার জন্য */
+        @page {
+            size: A5 portrait;
+            margin: 15mm;
+        }
+
+        /* সাধারণ পেজ স্টাইল */
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            background-color: #ffffff;
+            color: #333333;
+            margin: 0 auto;
+            padding: 20px;
+            max-width: 210mm; /* A4 সাইজের চওড়া */
+            box-sizing: border-box;
+            font-size: 12px;
+        }
+
+        /* হেডার অংশ */
+        .header-section {
+            margin-bottom: 25px;
+        }
+
+        /* কোম্পানির তথ্য */
+        .company-info {
+            line-height: 1.6;
+        }
+
+        .company-info h1 {
+            margin: 0 0 5px 0;
+            font-size: 22px;
+            text-transform: uppercase;
+        }
+
+        .company-info p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+        /* টাইটেল */
+        .document-title {
+            font-size: 18px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        /* মেইন টেবিল */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+
+        table th, table td {
+            border: 0.5px solid #999999; /* Thin clean border */
+            padding: 3px 7px;
+            font-size: 11px;
+            text-align: center; /* ডিফল্ট সেন্টার */
+            word-break: break-word;
+        }
+        
+        table td {
+            height: 24px;
+        }
+
+        table th {
+            font-weight: 600;
+            background-color: transparent;
+            height: 28px;
+        }
+
+        /* কলাম এলাইনমেন্ট */
+        table td.left { text-align: left; }
+        table td.right { text-align: right; }
+
+        /* সামারি টেবিল (নিচের অংশ) */
+        .summary-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .summary-table td {
+            border: 0.5px solid #999999;
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: normal;
+            text-align: left;
+            width: 50%;
+            height: 24px;
+        }
+
+        /* ফুটার / ওয়াটারমার্ক */
+        .footer-watermark {
+            margin-top: 50px;
+            text-align: center;
+            font-size: 11px;
+            color: #777;
+            user-select: none;
+        }
+
+        /* প্রিন্ট বাটন */
+        .print-btn {
+            display: block;
+            margin: 0 auto 20px auto;
+            padding: 8px 16px;
+            background-color: #000;
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-size: 14px;
+            border-radius: 4px;
+        }
+
+        .print-btn:hover {
+            background-color: #333;
+        }
+
+        /* প্রিন্ট করার সময় বাটন গায়েব */
+        @media print {
+            body {
+                max-width: none;
+                margin: 0;
+                padding: 0;
+            }
+            .print-btn {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- প্রিন্ট বাটন -->
+    <button class="print-btn" onclick="window.print()">🖨️ Print Cash Statement</button>
+
+    <!-- হেডার -->
+    <div class="header-section">
+        <div class="company-info">
+            <h1>BHAI BHAI AGENCY</h1>
+            <p>Mongoler Gaon Bottola Bazar</p>
+            <p>Sonargaon, Narayanganj</p>
+            <p>Phone - 01612119993, 01811119993</p>
+            <p>Period: {% if from_date and to_date %}{{ from_date }} to {{ to_date }}{% elif from_date %}From {{ from_date }}{% elif to_date %}Until {{ to_date }}{% else %}All Time{% endif %}</p>
+            <p>Print - <span id="print_datetime"></span></p>
+        </div>
+    </div>
+
+    <!-- ডকুমেন্ট টাইটেল -->
+    <div class="document-title">
+        Cash Statement
+    </div>
+
+    <!-- ডাটা টেবিল -->
+    <table>
+        <thead>
+            <tr>
+                <th style="width: 10%;">Date</th>
+                <th style="width: 15%;">Transaction Type</th>
+                <th style="width: 10%;">Ref No.</th>
+                <th style="width: 15%;">Description</th>
+                <th style="width: 15%;">Name</th>
+                <th style="width: 10%;">Cash In</th>
+                <th style="width: 10%;">Cash Out</th>
+                <th style="width: 15%;">Balance</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>-</td>
+                <td class="left">Opening Balance</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td class="right">{{ '%.2f' % summary.opening_balance }}</td>
+            </tr>
+            {% for lg in ledgers %}
+            <tr>
+                <td>{{ lg.date.strftime('%d-%m-%Y') }}</td>
+                <td class="left">{{ lg.source }}</td>
+                <td>{{ lg.voucher_no or '' }}</td>
+                <td class="left">{{ lg.description }}</td>
+                <td class="left">{{ lg.display_name }}</td>
+                <td class="right">{% if lg.type == 'In' %}{{ '%.2f' % lg.amount }}{% else %}0{% endif %}</td>
+                <td class="right">{% if lg.type == 'Out' %}{{ '%.2f' % lg.amount }}{% else %}0{% endif %}</td>
+                <td class="right">{{ '%.2f' % lg.display_balance }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <!-- সামারি টেবিল -->
+    <table class="summary-table">
+        <tbody>
+            <tr>
+                <td>Opening Balance : {{ '%.2f' % summary.opening_balance }}</td>
+                <td>Today's Expenses : {{ '%.2f' % summary.expenses }}</td>
+            </tr>
+            <tr>
+                <td>Today's Cash Sales : {{ '%.2f' % summary.cash_sales }}</td>
+                <td>Today's Cash Out : {{ '%.2f' % summary.cash_out }}</td>
+            </tr>
+            <tr>
+                <td>Today's Customer Col. : {{ '%.2f' % summary.customer_collections }}</td>
+                <td>Cash Purchases : {{ '%.2f' % summary.cash_purchases }}</td>
+            </tr>
+            <tr>
+                <td>Other Cash Income : {{ '%.2f' % summary.other_income }}</td>
+                <td>Supplier Payments : {{ '%.2f' % summary.supplier_payments }}</td>
+            </tr>
+            <tr>
+                <td>Total Cash In : {{ '%.2f' % summary.total_in }}</td>
+                <td>Total Cash Out : {{ '%.2f' % summary.total_out }}</td>
+            </tr>
+            <tr>
+                <td colspan="2" style="background-color: #f0f0f0;">Closing Cash Balance : {{ '%.2f' % summary.closing_balance }}</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <!-- ওয়াটারমার্ক -->
+    <div class="footer-watermark">
+        Developed by Mahfuz
+    </div>
+
+    <script>
+        // Set current date and time
+        const now = new Date();
+        document.getElementById('print_datetime').textContent = now.toLocaleString();
+        
+        // Auto trigger print when page loads
+        window.onload = function() {
+            setTimeout(function() {
+                window.print();
+            }, 500);
+        };
+        window.onafterprint = function() {
+            window.close();
+        };
+    </script>
+</body>
+</html>

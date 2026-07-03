@@ -1,15 +1,15 @@
-{% extends "layout.html" %}
+{% extends "base.html" %}
 {% block content %}
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Income Report (Profit & Loss)</h1>
 </div>
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3 bg-white">
+<div class="mb-4">
+    <div class="mb-3 py-3">
         <h6 class="m-0 font-weight-bold text-primary">Filter Date Range</h6>
     </div>
-    <div class="card-body">
-        <form method="GET" action="{{ url_for('account_reports.income_report') }}">
+    <div class="">
+        <div class="compact-filter"><form method="GET" action="{{ url_for('account_reports.income_report') }}">
             <div class="row g-3 align-items-end">
                 <div class="col-md-4">
                     <label for="from_date" class="form-label">From Date</label>
@@ -23,40 +23,40 @@
                     <button type="submit" class="btn btn-primary w-100"><i class="fas fa-search me-1"></i> Search</button>
                 </div>
             </div>
-        </form>
+        </form></div>
     </div>
 </div>
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3 bg-white d-flex justify-content-between align-items-center">
+<div class="mb-4">
+    <div class="mb-3 py-3 d-flex justify-content-between align-items-center">
         <h6 class="m-0 font-weight-bold text-primary">Profit & Loss Statement</h6>
         <div>
             <button class="btn btn-success btn-sm" onclick="window.print()"><i class="fas fa-print"></i> Print</button>
         </div>
     </div>
-    <div class="card-body">
+    <div class="">
         <div class="table-responsive">
             <table class="table table-bordered" width="100%" cellspacing="0">
                 <tbody>
                     <tr>
                         <td class="w-50">Total Sales</td>
-                        <td class="text-end ">৳{{ '%.2f' % total_sales_amount }}</td>
+                        <td class="text-end">৳{{ '%.2f' % total_sales_amount }}</td>
                     </tr>
                     <tr>
                         <td>(-) Sales Return</td>
-                        <td class="text-end ">৳{{ '%.2f' % total_returns }}</td>
+                        <td class="text-end">৳{{ '%.2f' % total_returns }}</td>
                     </tr>
                     <tr>
                         <td>(-) Sales Discount</td>
-                        <td class="text-end ">৳{{ '%.2f' % sales_discount }}</td>
+                        <td class="text-end">৳{{ '%.2f' % sales_discount }}</td>
                     </tr>
                     <tr class="table-light fw-bold">
                         <td>Net Sales</td>
-                        <td class="text-end ">৳{{ '%.2f' % net_sales }}</td>
+                        <td class="text-end">৳{{ '%.2f' % net_sales }}</td>
                     </tr>
                     <tr>
                         <td>(-) Cost of Goods Sold (COGS)</td>
-                        <td class="text-end ">৳{{ '%.2f' % cogs }}</td>
+                        <td class="text-end">৳{{ '%.2f' % cogs }}</td>
                     </tr>
                     <tr class="table-primary fw-bold">
                         <td>Gross Profit</td>
@@ -64,7 +64,7 @@
                     </tr>
                     <tr>
                         <td>(-) Office / Operational Expense</td>
-                        <td class="text-end ">৳{{ '%.2f' % office_expense }}</td>
+                        <td class="text-end">৳{{ '%.2f' % office_expense }}</td>
                     </tr>
                     <tr class="table-success text-dark fs-5 fw-bold">
                         <td>Net Profit</td>

@@ -1,10 +1,10 @@
-{% extends "layout.html" %}
+{% extends "base.html" %}
 {% block content %}
-<div class="card shadow mb-4">
-    <div class="card-header py-3 bg-white">
+<div class="mb-4">
+    <div class="mb-3 py-3">
         <h6 class="m-0 font-weight-bold text-primary">{{ action }} Sale Return</h6>
     </div>
-    <div class="card-body">
+    <div class="">
         <form method="POST" id="returnForm">
             <h5 class="mb-3 border-bottom pb-2">Customer & Invoice Information</h5>
             <div class="row mb-3">
@@ -48,7 +48,7 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <td colspan="7" class="text-end ">Subtotal:</td>
+                            <td colspan="7" class="text-end">Subtotal:</td>
                             <td><input type="text" class="form-control form-control-sm fw-bold" id="subtotal" readonly value="0.00"></td>
                             <td></td>
                         </tr>

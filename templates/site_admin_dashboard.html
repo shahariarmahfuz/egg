@@ -1,0 +1,97 @@
+{% extends "site_admin_base.html" %}
+{% block title %}Site Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Site Admin Dashboard</h1>
+    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addBusinessModal">Add Business</button>
+</div>
+
+<div class="table-responsive">
+    <table class="table table-striped table-sm">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Business Name</th>
+                <th>Slug (URL)</th>
+                <th>Status</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for b in businesses %}
+            <tr>
+                <td>{{ b.id }}</td>
+                <td>{{ b.business_name }}</td>
+                <td>{{ b.business_slug }}</td>
+                <td>{{ b.status }}</td>
+                <td>
+                    <button class="btn btn-sm btn-info" data-bs-toggle="modal" data-bs-target="#editBusinessModal{{ b.id }}">Edit</button>
+                    <a href="{{ url_for('site_admin.manage_users', business_id=b.id) }}" class="btn btn-sm btn-secondary">Users</a>
+                    {% if b.status == 'Active' %}
+                    <a href="{{ url_for('site_admin.business_status', id=b.id, status='deactivate') }}" class="btn btn-sm btn-warning">Deactivate</a>
+                    {% else %}
+                    <a href="{{ url_for('site_admin.business_status', id=b.id, status='activate') }}" class="btn btn-sm btn-success">Activate</a>
+                    {% endif %}
+                    <a href="{{ url_for('site_admin.delete_business', id=b.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                </td>
+            </tr>
+
+            <!-- Edit Business Modal -->
+            <div class="modal fade" id="editBusinessModal{{ b.id }}" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog">
+                    <form method="POST" action="{{ url_for('site_admin.edit_business', id=b.id) }}">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Edit Business</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <label>Business Name</label>
+                                    <input type="text" name="business_name" class="form-control" value="{{ b.business_name }}" required>
+                                </div>
+                                <div class="mb-3">
+                                    <label>Business Slug</label>
+                                    <input type="text" name="business_slug" class="form-control" value="{{ b.business_slug }}" required>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="submit" class="btn btn-primary">Save Changes</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Add Business Modal -->
+<div class="modal fade" id="addBusinessModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog">
+        <form method="POST" action="{{ url_for('site_admin.create_business') }}">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add Business</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label>Business Name</label>
+                        <input type="text" name="business_name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label>Business Slug</label>
+                        <input type="text" name="business_slug" class="form-control" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">Create Business</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

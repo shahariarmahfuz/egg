@@ -1,16 +1,16 @@
-{% extends "layout.html" %}
+{% extends "base.html" %}
 {% block content %}
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Purchase Items Report</h1>
 </div>
 
 <!-- Filters -->
-<div class="card shadow mb-4">
-    <div class="card-header py-3 bg-white">
+<div class="mb-4">
+    <div class="mb-3 py-3">
         <h6 class="m-0 font-weight-bold text-primary">Filter Items</h6>
     </div>
-    <div class="card-body">
-        <form method="GET" action="{{ url_for('purchase.purchase_items_report') }}">
+    <div class="">
+        <div class="compact-filter"><form method="GET" action="{{ url_for('purchase.purchase_items_report') }}">
             <div class="row g-3 align-items-end">
                 <div class="col-md-3">
                     <label for="supplier_id" class="form-label">Supplier</label>
@@ -34,15 +34,15 @@
                     <a href="{{ url_for('purchase.purchase_items_report') }}" class="btn btn-secondary"><i class="fas fa-undo me-1"></i> Reset</a>
                 </div>
             </div>
-        </form>
+        </form></div>
     </div>
 </div>
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3 bg-white d-flex justify-content-between align-items-center">
+<div class="mb-4">
+    <div class="mb-3 py-3 d-flex justify-content-between align-items-center">
         <h6 class="m-0 font-weight-bold text-primary">Item Details</h6>
     </div>
-    <div class="card-body">
+    <div class="">
         <div class="table-responsive">
             <table class="table table-bordered table-striped" id="dataTableItemsReport" width="100%" cellspacing="0">
                 <thead class="table-dark">

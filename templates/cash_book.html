@@ -1,15 +1,18 @@
-{% extends "layout.html" %}
+{% extends "base.html" %}
 {% block content %}
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Cash Book</h1>
+    <a href="{{ url_for('account_reports.cash_book_print', from_date=from_date, to_date=to_date) }}" onclick="return popupPrint(this.href);" class="btn btn-sm btn-danger shadow-sm">
+        <i class="fas fa-file-pdf fa-sm text-white-50"></i> Print PDF
+    </a>
 </div>
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3 bg-white">
+<div class="mb-4">
+    <div class="mb-3 py-3">
         <h6 class="m-0 font-weight-bold text-primary">Filter Cash Book</h6>
     </div>
-    <div class="card-body">
-        <form method="GET" action="{{ url_for('account_reports.cash_book') }}">
+    <div class="">
+        <div class="compact-filter"><form method="GET" action="{{ url_for('account_reports.cash_book') }}">
             <div class="row g-3 align-items-end">
                 <div class="col-md-5">
                     <label for="from_date" class="form-label">From Date</label>
@@ -23,39 +26,37 @@
                     <button type="submit" class="btn btn-primary w-100"><i class="fas fa-search me-1"></i> Search</button>
                 </div>
             </div>
-        </form>
+        </form></div>
     </div>
 </div>
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3 bg-white">
+<div class="mb-4">
+    <div class="mb-3 py-3">
         <h6 class="m-0 font-weight-bold text-primary">Cash Ledger</h6>
     </div>
-    <div class="card-body">
+    <div class="">
         <div class="table-responsive">
             <table class="table table-bordered table-striped" id="dataTableCashBook" width="100%" cellspacing="0">
                 <thead class="table-dark">
                     <tr>
                         <th>Date</th>
+                        <th>Transaction Type</th>
+                        <th>Reference No.</th>
                         <th>Description</th>
-                        <th>Voucher / Invoice</th>
-                        <th>Debit (In)</th>
-                        <th>Credit (Out)</th>
+                        <th>Name</th>
+                        <th>Cash In</th>
+                        <th>Cash Out</th>
                         <th>Running Balance</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="table-info fw-bold">
-                        <td colspan="3" class="text-end">Previous Balance:</td>
-                        <td></td>
-                        <td></td>
-                        <td>৳{{ '%.2f' % previous_balance }}</td>
-                    </tr>
                     {% for lg in ledgers %}
                     <tr>
                         <td>{{ lg.date.strftime('%Y-%m-%d') }}</td>
-                        <td>{{ lg.description }}</td>
+                        <td>{{ lg.source }}</td>
                         <td>{{ lg.voucher_no }}</td>
+                        <td>{{ lg.description }}</td>
+                        <td>{{ lg.display_name }}</td>
                         <td>{% if lg.type == 'In' %}৳{{ '%.2f' % lg.amount }}{% else %}-{% endif %}</td>
                         <td>{% if lg.type == 'Out' %}৳{{ '%.2f' % lg.amount }}{% else %}-{% endif %}</td>
                         <td >৳{{ '%.2f' % lg.display_balance }}</td>
@@ -69,20 +70,49 @@
             <div class="col-md-6 offset-md-6">
                 <table class="table table-sm table-bordered bg-light">
                     <tr>
-                        <td class="w-50">Previous Balance</td>
-                        <td class="text-end">৳{{ '%.2f' % previous_balance }}</td>
+                        <td class="w-50 font-weight-bold">Opening Balance</td>
+                        <td class="text-end font-weight-bold">৳{{ '%.2f' % summary.opening_balance }}</td>
                     </tr>
                     <tr>
-                        <td>Today Cash Receive</td>
-                        <td class="text-end ">৳{{ '%.2f' % today_receive }}</td>
+                        <td>Today's Cash Sales</td>
+                        <td class="text-end">৳{{ '%.2f' % summary.cash_sales }}</td>
                     </tr>
                     <tr>
-                        <td>Today Expense</td>
-                        <td class="text-end ">৳{{ '%.2f' % today_expense }}</td>
+                        <td>Today's Customer Collections</td>
+                        <td class="text-end">৳{{ '%.2f' % summary.customer_collections }}</td>
+                    </tr>
+                    <tr>
+                        <td>Other Cash Income</td>
+                        <td class="text-end">৳{{ '%.2f' % summary.other_income }}</td>
+                    </tr>
+                    <tr class="table-success">
+                        <td class="font-weight-bold">Total Cash In</td>
+                        <td class="text-end font-weight-bold">৳{{ '%.2f' % summary.total_in }}</td>
+                    </tr>
+                    <tr><td colspan="2"></td></tr>
+                    <tr>
+                        <td>Today's Expenses</td>
+                        <td class="text-end">৳{{ '%.2f' % summary.expenses }}</td>
+                    </tr>
+                    <tr>
+                        <td>Today's Cash Out</td>
+                        <td class="text-end">৳{{ '%.2f' % summary.cash_out }}</td>
+                    </tr>
+                    <tr>
+                        <td>Cash Purchases</td>
+                        <td class="text-end">৳{{ '%.2f' % summary.cash_purchases }}</td>
+                    </tr>
+                    <tr>
+                        <td>Supplier Payments</td>
+                        <td class="text-end">৳{{ '%.2f' % summary.supplier_payments }}</td>
+                    </tr>
+                    <tr class="table-danger">
+                        <td class="font-weight-bold">Total Cash Out</td>
+                        <td class="text-end font-weight-bold">৳{{ '%.2f' % summary.total_out }}</td>
                     </tr>
                     <tr class="table-primary fs-5">
-                        <td>Cash Balance (In Hand)</td>
-                        <td class="text-end ">৳{{ '%.2f' % cash_in_hand }}</td>
+                        <td class="font-weight-bold">Closing Cash Balance</td>
+                        <td class="text-end font-weight-bold">৳{{ '%.2f' % summary.closing_balance }}</td>
                     </tr>
                 </table>
             </div>

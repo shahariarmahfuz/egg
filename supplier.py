@@ -21,7 +21,7 @@ def add_supplier():
             if prev_bal_val < 0:
                 flash("Previous Balance cannot be negative.", "danger")
             elif Supplier.query.filter_by(supplier_name=supplier_name).first():
-                flash("Supplier with this name already exists.", "danger")
+                flash("Supplier name already exists.", "danger")
             else:
                 if contact_number and len(contact_number.strip()) < 7:
                     flash("Please enter a valid contact number.", "danger")
@@ -40,6 +40,7 @@ def add_supplier():
                     flash("Supplier added successfully.", "success")
                     return redirect(url_for('supplier.manage_supplier'))
         except Exception as e:
+            db.session.rollback()
             flash(f"Error: {e}", "danger")
             
     return render_template('supplier_form.html', action="Add")
@@ -62,7 +63,7 @@ def edit_supplier(id):
 
         existing = Supplier.query.filter_by(supplier_name=supplier_name).first()
         if existing and existing.id != id:
-            flash("Supplier with this name already exists.", "danger")
+            flash("Supplier name already exists.", "danger")
         else:
             try:
                 prev_bal_val = float(previous_balance)
@@ -79,6 +80,7 @@ def edit_supplier(id):
                     flash("Supplier updated successfully.", "success")
                     return redirect(url_for('supplier.manage_supplier'))
             except Exception as e:
+                db.session.rollback()
                 flash(f"Error: {e}", "danger")
     return render_template('supplier_form.html', action="Edit", supplier=sup)
 

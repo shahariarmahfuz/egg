@@ -1,12 +1,12 @@
-{% extends "layout.html" %}
+{% extends "base.html" %}
 {% block page_title %}My Profile{% endblock %}
 {% block page_subtitle %}Your account details{% endblock %}
 
 {% block content %}
 <div class="row">
     <div class="col-lg-8 mx-auto">
-        <div class="card">
-            <div class="card-body p-4 text-center">
+        <div class="mb-4">
+            <div class="p-4 text-center">
                 <div class="mb-4">
                     <div style="width: 100px; height: 100px; border-radius: 50%; background: linear-gradient(135deg, #6366f1, #a855f7); color: white; font-size: 3rem; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);">
                         {{ current_user.name[0] | upper if current_user.name else current_user.username[0] | upper }}

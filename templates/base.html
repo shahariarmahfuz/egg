@@ -506,5 +506,20 @@
         });
     </script>
     {% block scripts %}{% endblock %}
+
+    <script>
+        function popupPrint(url) {
+            const width = 800;
+            const height = 600;
+            const left = (screen.width - width) / 2;
+            const top = (screen.height - height) / 2;
+            const printWindow = window.open(url, 'PrintWindow', 'width=' + width + ',height=' + height + ',left=' + left + ',top=' + top + ',scrollbars=yes');
+            if (printWindow) {
+                printWindow.focus();
+            }
+            return false;
+        }
+    </script>
+
 </body>
 </html>

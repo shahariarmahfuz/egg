@@ -1,4 +1,4 @@
-{% extends "layout.html" %}
+{% extends "base.html" %}
 {% block content %}
 <div class="d-sm-flex align-items-center justify-content-between mb-4">
     <h1 class="h3 mb-0 text-gray-800">Manage Daily Expense</h1>
@@ -6,12 +6,12 @@
 </div>
 
 <!-- Filters -->
-<div class="card shadow mb-4">
-    <div class="card-header py-3 bg-white">
+<div class="mb-4">
+    <div class="mb-3 py-3">
         <h6 class="m-0 font-weight-bold text-primary">Filter Expenses</h6>
     </div>
-    <div class="card-body">
-        <form method="GET" action="{{ url_for('expenses.manage_daily_expense') }}">
+    <div class="">
+        <div class="compact-filter"><form method="GET" action="{{ url_for('expenses.manage_daily_expense') }}">
             <div class="row g-3 align-items-end">
                 <div class="col-md-4">
                     <label for="date" class="form-label">Date</label>
@@ -31,21 +31,21 @@
                     <a href="{{ url_for('expenses.manage_daily_expense') }}" class="btn btn-secondary"><i class="fas fa-undo me-1"></i> Clear</a>
                 </div>
             </div>
-        </form>
+        </form></div>
     </div>
 </div>
 
-<div class="card shadow mb-4">
-    <div class="card-header py-3 bg-white d-flex justify-content-between align-items-center">
+<div class="mb-4">
+    <div class="mb-3 py-3 d-flex justify-content-between align-items-center">
         <h6 class="m-0 font-weight-bold text-primary">Daily Expenses List</h6>
         <span class="badge bg-danger fs-6 p-2 shadow-sm rounded-pill">Total Amount: ৳{{ '%.2f' % total_amount }}</span>
     </div>
-    <div class="card-body">
+    <div class="">
         <div class="table-responsive">
             <table class="table table-bordered table-striped" id="dataTableExpenses" width="100%" cellspacing="0">
                 <thead class="table-dark">
                     <tr>
-                        <th>SL</th>
+                        <th style="width: 1%; white-space: nowrap;">SL</th>
                         <th>Invoice No</th>
                         <th>Date</th>
                         <th>Expense Head</th>

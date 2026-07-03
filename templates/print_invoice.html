@@ -334,9 +334,20 @@
             const urlParams = new URLSearchParams(window.location.search);
             if (urlParams.get('autoprint') !== 'false') {
                 setTimeout(function() {
-                    window.print();
+                    
                 }, 500);
             }
+        };
+    </script>
+
+    <script>
+        window.onload = function() {
+            setTimeout(function() {
+                window.print();
+            }, 500);
+        };
+        window.onafterprint = function() {
+            window.close();
         };
     </script>
 </body>

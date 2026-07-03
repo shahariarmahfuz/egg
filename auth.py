@@ -17,21 +17,33 @@ auth_bp = Blueprint('auth', __name__)
 @auth_bp.route('/login', methods=['GET', 'POST'])
 def login():
     if current_user.is_authenticated:
-        return redirect(url_for('routes.dashboard'))
+        if current_user.role == 'Site Admin':
+            return redirect(url_for('site_admin.dashboard'))
+        else:
+            from models import Business
+            business = Business.query.get(current_user.business_id)
+            return redirect(url_for('routes.dashboard', business_slug=business.business_slug))
         
     if request.method == 'POST':
         username = request.form.get('username')
         password = request.form.get('password')
         
+        # Use enable_assertions(False) in case limit is applied somewhere, though usually it's fine here
+        # Actually since g.business is None on /dashboard/login, the before_compile filter is NOT added.
         admin = Admin.query.filter_by(username=username).first()
         
         if admin and check_password_hash(admin.password, password):
+            if admin.role == 'Site Admin':
+                flash('Access Denied. Site Admins must use /site-admin/login.', 'danger')
+                return redirect(url_for('auth.login'))
             if admin.status != 'Active':
                 flash('Your account is inactive. Please contact admin.', 'danger')
                 return redirect(url_for('auth.login'))
             login_user(admin)
             session['role'] = admin.role
-            return redirect(url_for('routes.dashboard'))
+            from models import Business
+            business = Business.query.get(admin.business_id)
+            return redirect(url_for('routes.dashboard', business_slug=business.business_slug))
         else:
             flash('Invalid username or password.', 'danger')
             

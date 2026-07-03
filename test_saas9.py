@@ -1,0 +1,52 @@
+from flask import Flask, g, has_request_context
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import event
+from sqlalchemy.orm import Query
+
+app = Flask(__name__)
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'
+db = SQLAlchemy(app)
+
+class Business(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    business_id = db.Column(db.Integer, db.ForeignKey('business.id'))
+
+@event.listens_for(Query, "before_compile", retval=True)
+def before_compile(query):
+    if has_request_context() and getattr(g, 'business_id', None):
+        for column_description in query.column_descriptions:
+            entity = column_description['entity']
+            if entity is None:
+                continue
+            if hasattr(entity, 'business_id') and entity.__name__ != 'Business':
+                query = query.filter(entity.business_id == g.business_id)
+    return query
+
+with app.app_context():
+    db.create_all()
+    b1 = Business(name="B1")
+    b2 = Business(name="B2")
+    db.session.add_all([b1, b2])
+    db.session.commit()
+    
+    u1 = User(name="U1", business_id=b1.id)
+    u2 = User(name="U2", business_id=b2.id)
+    u3 = User(name="U3", business_id=b2.id)
+    db.session.add_all([u1, u2, u3])
+    db.session.commit()
+
+@app.route('/b/<int:b_id>')
+def test(b_id):
+    g.business_id = b_id
+    users = User.query.all()
+    return ','.join(u.name for u in users)
+
+if __name__ == '__main__':
+    with app.test_client() as client:
+        print("B1:", client.get('/b/1').data.decode())
+        print("B2:", client.get('/b/2').data.decode())

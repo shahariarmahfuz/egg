@@ -6,9 +6,19 @@ import string
 
 db = SQLAlchemy()
 
+
+class Business(db.Model):
+    __tablename__ = 'businesses'
+    id = db.Column(db.Integer, primary_key=True)
+    business_name = db.Column(db.String(150), nullable=False)
+    business_slug = db.Column(db.String(150), unique=True, nullable=False)
+    status = db.Column(db.String(50), default='Active')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
 class Admin(UserMixin, db.Model):
     __tablename__ = 'admin'
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     name = db.Column(db.String(150), nullable=True)
     username = db.Column(db.String(150), unique=True, nullable=False)
     email = db.Column(db.String(150), unique=True, nullable=True)
@@ -28,6 +38,7 @@ def generate_invoice_no():
 class ExpenseHead(db.Model):
     __tablename__ = 'expense_heads'
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     head_name = db.Column(db.String(100), unique=True, nullable=False)
     head_code = db.Column(db.String(50), unique=True, nullable=False, default=generate_head_code)
     created_date = db.Column(db.Date, default=datetime.utcnow().date)
@@ -36,6 +47,7 @@ class ExpenseHead(db.Model):
 class ExpenseEntry(db.Model):
     __tablename__ = 'expenses'
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     invoice_no = db.Column(db.String(50), unique=True, nullable=False, default=generate_invoice_no)
     expense_head_id = db.Column(db.Integer, db.ForeignKey('expense_heads.id'), nullable=False)
     date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
@@ -45,6 +57,7 @@ class ExpenseEntry(db.Model):
 
 class CashOut(db.Model):
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
     type = db.Column(db.String(50), nullable=False)
     comment = db.Column(db.String(255), nullable=True)
@@ -57,9 +70,13 @@ def generate_supplier_code():
 
 class Supplier(db.Model):
     __tablename__ = 'suppliers'
+    __table_args__ = (
+        db.UniqueConstraint('business_id', 'supplier_name', name='uq_business_supplier_name'),
+    )
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     supplier_code = db.Column(db.String(50), unique=True, nullable=False, default=generate_supplier_code)
-    supplier_name = db.Column(db.String(100), unique=True, nullable=False)
+    supplier_name = db.Column(db.String(100), nullable=False)
     address = db.Column(db.Text, nullable=True)
     contact_number = db.Column(db.String(20), nullable=True)
     previous_balance = db.Column(db.Float, default=0.0)
@@ -71,6 +88,7 @@ class Supplier(db.Model):
 class Product(db.Model):
     __tablename__ = 'products'
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     product_code = db.Column(db.String(50), unique=True, nullable=False)
     product_name = db.Column(db.String(150), nullable=False)
     category = db.Column(db.String(100), nullable=True)
@@ -91,6 +109,7 @@ def generate_purchase_invoice():
 class Purchase(db.Model):
     __tablename__ = 'purchases'
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     invoice_no = db.Column(db.String(50), unique=True, nullable=False, default=generate_purchase_invoice)
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'), nullable=False)
     purchase_date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
@@ -111,6 +130,7 @@ class Purchase(db.Model):
 class PurchaseItem(db.Model):
     __tablename__ = 'purchase_items'
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     purchase_id = db.Column(db.Integer, db.ForeignKey('purchases.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     quantity = db.Column(db.Float, nullable=False)
@@ -126,6 +146,7 @@ def generate_return_invoice():
 class PurchaseReturn(db.Model):
     __tablename__ = 'purchase_returns'
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     return_invoice = db.Column(db.String(50), unique=True, nullable=False, default=generate_return_invoice)
     purchase_id = db.Column(db.Integer, db.ForeignKey('purchases.id'), nullable=True)
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'), nullable=False)
@@ -147,6 +168,7 @@ class PurchaseReturn(db.Model):
 class PurchaseReturnItem(db.Model):
     __tablename__ = 'purchase_return_items'
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     return_id = db.Column(db.Integer, db.ForeignKey('purchase_returns.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     quantity = db.Column(db.Float, nullable=False)
@@ -162,6 +184,7 @@ def generate_customer_code():
 class Customer(db.Model):
     __tablename__ = 'customers'
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     customer_code = db.Column(db.String(50), unique=True, nullable=False, default=generate_customer_code)
     customer_name = db.Column(db.String(100), nullable=False)
     address = db.Column(db.Text, nullable=True)
@@ -178,6 +201,7 @@ def generate_sale_invoice():
 class Sale(db.Model):
     __tablename__ = 'sales'
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     invoice_no = db.Column(db.String(50), unique=True, nullable=False, default=generate_sale_invoice)
     customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
     sale_date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
@@ -199,6 +223,7 @@ class Sale(db.Model):
 class SaleItem(db.Model):
     __tablename__ = 'sale_items'
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     sale_id = db.Column(db.Integer, db.ForeignKey('sales.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     quantity = db.Column(db.Float, nullable=False)
@@ -213,6 +238,7 @@ class SaleItem(db.Model):
 class CustomerLedger(db.Model):
     __tablename__ = 'customer_ledgers'
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
     date = db.Column(db.Date, nullable=False)
     invoice_no = db.Column(db.String(50), nullable=True)
@@ -230,6 +256,7 @@ def generate_sale_return_invoice():
 class SaleReturn(db.Model):
     __tablename__ = 'sale_returns'
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     return_invoice = db.Column(db.String(50), unique=True, nullable=False, default=generate_sale_return_invoice)
     sale_invoice = db.Column(db.String(50), nullable=True)
     customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
@@ -249,6 +276,7 @@ class SaleReturn(db.Model):
 class SaleReturnItem(db.Model):
     __tablename__ = 'sale_return_items'
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     return_id = db.Column(db.Integer, db.ForeignKey('sale_returns.id'), nullable=False)
     product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
     quantity = db.Column(db.Float, nullable=False)
@@ -264,6 +292,7 @@ def generate_collection_voucher():
 class CustomerCollection(db.Model):
     __tablename__ = 'customer_collections'
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     voucher_no = db.Column(db.String(50), unique=True, nullable=False, default=generate_collection_voucher)
     customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
     date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
@@ -284,6 +313,7 @@ class CustomerCollection(db.Model):
 class CashLedger(db.Model):
     __tablename__ = 'cash_ledgers'
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     voucher_no = db.Column(db.String(50), nullable=True)
     description = db.Column(db.String(255), nullable=True)
     amount = db.Column(db.Float, default=0.0)
@@ -295,6 +325,7 @@ class CashLedger(db.Model):
 class Bank(db.Model):
     __tablename__ = 'banks'
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     bank_name = db.Column(db.String(150), nullable=False)
     account_name = db.Column(db.String(150), nullable=False)
     account_number = db.Column(db.String(100), unique=True, nullable=False)
@@ -305,6 +336,7 @@ class Bank(db.Model):
 class BankTransaction(db.Model):
     __tablename__ = 'bank_transactions'
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     bank_id = db.Column(db.Integer, db.ForeignKey('banks.id'), nullable=False)
     date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
     description = db.Column(db.String(255), nullable=True)
@@ -326,6 +358,7 @@ def generate_supplier_payment_voucher():
 class SupplierPayment(db.Model):
     __tablename__ = 'supplier_payments'
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     voucher_no = db.Column(db.String(50), unique=True, nullable=False, default=generate_supplier_payment_voucher)
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'), nullable=False)
     date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
@@ -346,6 +379,7 @@ class SupplierPayment(db.Model):
 class SupplierLedger(db.Model):
     __tablename__ = 'supplier_ledgers'
     id = db.Column(db.Integer, primary_key=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'), nullable=False)
     date = db.Column(db.Date, nullable=False)
     invoice_no = db.Column(db.String(50), nullable=True)
@@ -356,3 +390,25 @@ class SupplierLedger(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     supplier = db.relationship('Supplier', backref=db.backref('ledger_entries', cascade="all, delete-orphan"), lazy=True)
+
+
+from sqlalchemy import event
+from sqlalchemy.orm import Query
+from flask import g, has_request_context
+
+@event.listens_for(Query, "before_compile", retval=True)
+def before_compile(query):
+    if has_request_context() and getattr(g, 'business', None):
+        for column_description in query.column_descriptions:
+            entity = column_description['entity']
+            if entity is None:
+                continue
+            if hasattr(entity, 'business_id') and getattr(entity, '__name__', '') != 'Business':
+                query = query.enable_assertions(False).filter(entity.business_id == g.business.id)
+    return query
+
+@event.listens_for(db.Model, 'before_insert', propagate=True)
+def receive_before_insert(mapper, connection, target):
+    if hasattr(target, 'business_id') and getattr(target, '__class__', None) and target.__class__.__name__ != 'Business':
+        if not target.business_id and has_request_context() and getattr(g, 'business', None):
+            target.business_id = g.business.id

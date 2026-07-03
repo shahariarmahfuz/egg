@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required
 from auth import admin_required
-from models import db, Sale, SaleItem, Customer, Product, CustomerLedger
+from models import db, Sale, SaleItem, Customer, Product, CustomerLedger, CashLedger
 from datetime import datetime
 
 sale_bp = Blueprint('sale', __name__, url_prefix='/sale')
@@ -112,6 +112,22 @@ def add_sale():
                             balance=cust.current_balance
                         )
                         db.session.add(ledger)
+            
+            # Insert into CashLedger for cash_paid
+            if cash_paid > 0:
+                from models import CashLedger
+                last_cash = CashLedger.query.order_by(CashLedger.id.desc()).first()
+                running = last_cash.running_balance if last_cash else 0.0
+                new_running = running + cash_paid
+                cash_lg = CashLedger(
+                    voucher_no=new_sale.invoice_no,
+                    description="Sale Product in Cash",
+                    amount=cash_paid,
+                    type='In',
+                    date=sale_date,
+                    running_balance=new_running
+                )
+                db.session.add(cash_lg)
 
             db.session.commit()
             flash("Sale completed successfully.", "success")
@@ -138,7 +154,15 @@ def search_product():
     if not term:
         return jsonify([])
     # Support barcode / product_code / product_name search
-    prods = Product.query.filter(db.or_(Product.product_code.ilike(f'%{term}%'), Product.product_name.ilike(f'%{term}%'))).limit(10).all()
+    prods = Product.query.filter(
+        db.or_(
+            Product.product_code.ilike(f'%{term}%'),
+            Product.product_name.ilike(f'%{term}%'),
+            Product.barcode.ilike(f'%{term}%')
+        ),
+        Product.current_stock > 0,
+        Product.status == 'Active'
+    ).limit(10).all()
     results = [{'id': p.id, 'text': f"{p.product_name} ({p.product_code}) - Stock: {p.current_stock}", 'code': p.product_code, 'name': p.product_name, 'stock': p.current_stock, 'price': p.selling_price} for p in prods]
     return jsonify(results)
 

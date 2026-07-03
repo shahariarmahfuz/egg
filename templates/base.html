@@ -14,7 +14,7 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/print.css') }}">
     {% block styles %}{% endblock %}
 </head>
-<body class="{% if request.endpoint != 'routes.dashboard' %}modern-ui{% endif %}">
+<body class="{% if request.endpoint not in ['routes.dashboard', 'routes.all_time_dashboard'] %}modern-ui{% endif %}">
     {% if current_user.is_authenticated %}
     <div id="wrapper">
 
@@ -270,6 +270,8 @@
                         <div id="collapseReports" class="accordion-collapse collapse {% if 'account_reports.' in request.endpoint %}show{% endif %}" data-bs-parent="#sidebarAccordion">
                             <div class="accordion-body p-0">
                                 <div class="list-group list-group-flush">
+                                    <a href="{{ url_for('routes.dashboard') }}" class="list-group-item list-group-item-action {{ 'active-menu' if request.endpoint == 'routes.dashboard' else '' }}"><i class="fa-solid fa-caret-right me-2"></i>Dashboard</a>
+                                    <a href="{{ url_for('routes.all_time_dashboard') }}" class="list-group-item list-group-item-action {{ 'active-menu' if request.endpoint == 'routes.all_time_dashboard' else '' }}"><i class="fa-solid fa-caret-right me-2"></i>All-Time Dashboard</a>
                                     <a href="{{ url_for('account_reports.expense_report') }}" class="list-group-item list-group-item-action {{ 'active-menu' if request.endpoint == 'account_reports.expense_report' else '' }}"><i class="fa-solid fa-caret-right me-2"></i>Expense Report</a>
                                     <a href="{{ url_for('account_reports.income_report') }}" class="list-group-item list-group-item-action {{ 'active-menu' if request.endpoint == 'account_reports.income_report' else '' }}"><i class="fa-solid fa-caret-right me-2"></i>Income Report</a>
                                     <a href="{{ url_for('account_reports.bank_report') }}" class="list-group-item list-group-item-action {{ 'active-menu' if request.endpoint == 'account_reports.bank_report' else '' }}"><i class="fa-solid fa-caret-right me-2"></i>Bank Report</a>

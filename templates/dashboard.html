@@ -1,6 +1,6 @@
 {% extends "base.html" %}
-{% block page_title %}Dashboard{% endblock %}
-{% block page_subtitle %}Welcome! Today's overall business status{% endblock %}
+{% block page_title %}{{ dashboard_title|default('Dashboard') }}{% endblock %}
+{% block page_subtitle %}{{ dashboard_subtitle|default("Welcome! Today's overall business status") }}{% endblock %}
 {% block content %}
 
 <!-- Date Bar -->

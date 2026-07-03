@@ -131,7 +131,6 @@ def create_app():
             # Attempt automatic migrations if there are model changes
             try:
                 import flask_migrate
-                import os
                 
                 # Check if alembic exists, else initialize it
                 if not os.path.exists('migrations'):

@@ -125,30 +125,44 @@ def create_app():
             db.engine.connect()
             print("Database connection verified.")
 
-            # Create tables if they do not exist
-            db.create_all()
-
-            # Attempt automatic migrations if there are model changes
+            # Attempt automatic migrations safely
             try:
                 import flask_migrate
                 
-                # Check if alembic exists, else initialize it
                 if not os.path.exists('migrations'):
-                    flask_migrate.init()
+                    try:
+                        flask_migrate.init()
+                    except BaseException as e:
+                        print(f"Init warning: {e}")
                 
-                # Automatically stamp and migrate
-                # Ignore failures as they might occur if migrations are already up-to-date or empty DB
-                try:
-                    flask_migrate.migrate(message="Automatic startup migration")
-                except Exception as e:
-                    print(f"Migration generation warning: {e}")
-                
+                # 1. Apply existing migrations first
                 try:
                     flask_migrate.upgrade()
-                except Exception as e:
-                    print(f"Upgrade warning: {e}")
+                except BaseException as e:
+                    print(f"Initial upgrade warning: {e}")
+                
+                # 2. Create any missing tables not covered by migrations
+                db.create_all()
+                
+                # 3. Stamp to ensure alembic_version exists and is current
+                try:
+                    flask_migrate.stamp()
+                except BaseException as e:
+                    print(f"Stamp warning: {e}")
+                
+                # 4. Generate new migration for any unmigrated model changes
+                try:
+                    flask_migrate.migrate(message="Automatic startup migration")
+                except BaseException as e:
+                    print(f"Migrate warning: {e}")
+                
+                # 5. Apply the newly generated migration (e.g. column alters)
+                try:
+                    flask_migrate.upgrade()
+                except BaseException as e:
+                    print(f"Final upgrade warning: {e}")
                     
-            except Exception as e:
+            except BaseException as e:
                 print(f"Migration phase skipped/error: {e}")
 
             # Ensure Site Admin exists

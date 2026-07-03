@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required
 from auth import admin_required
-from models import db, Customer, CustomerLedger
+from models import db, Customer, CustomerLedger, dhaka_now
 from datetime import datetime
 
 customer_bp = Blueprint('customer', __name__, url_prefix='/customer')
@@ -21,7 +21,7 @@ def add_customer():
         else:
             try:
                 prev_bal_val = float(previous_balance)
-                date_obj = datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else datetime.utcnow().date()
+                date_obj = datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else dhaka_now().date()
                 
                 new_cust = Customer(
                     customer_name=customer_name,

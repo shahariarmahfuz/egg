@@ -11,7 +11,7 @@ class Business(db.Model):
     business_name = db.Column(db.String(150), nullable=False)
     business_slug = db.Column(db.String(150), unique=True, nullable=False)
     status = db.Column(db.String(50), default='Active')
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=dhaka_now)
 """
 
 if "class Business" not in content:

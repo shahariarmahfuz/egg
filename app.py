@@ -42,7 +42,7 @@ def create_app():
         elif getattr(g, 'business_slug', None):
             return redirect(url_for('auth.login', next=request.path))
         else:
-            return redirect('/site-admin/login')
+            return redirect(url_for('auth.login'))
 
     @app.url_value_preprocessor
     def pull_business_slug(endpoint, values):
@@ -117,7 +117,7 @@ def create_app():
 
     @app.route('/')
     def index():
-        return redirect(url_for('site_admin.login'))
+        return redirect(url_for('auth.login'))
 
     with app.app_context():
         # Ensure database is connected and initialized safely

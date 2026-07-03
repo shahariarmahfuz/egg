@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required
 from auth import admin_required, current_user
-from models import db, CustomerCollection, Customer, CustomerLedger, CashLedger
+from models import db, CustomerCollection, Customer, CustomerLedger, CashLedger, dhaka_now
 from datetime import datetime
 
 customer_collection_bp = Blueprint('customer_collection', __name__, url_prefix='/customer_collection')
@@ -41,7 +41,7 @@ def collection():
             balance = previous_due - discount - cash_paid
             if balance < 0: balance = 0
             
-            collection_date = datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else datetime.utcnow().date()
+            collection_date = datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else dhaka_now().date()
             
             col = CustomerCollection(
                 customer_id=customer_id,

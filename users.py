@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required, current_user
 from werkzeug.security import generate_password_hash
-from models import db, Admin
+from models import db, Admin, dhaka_now
 from auth import admin_required
 from datetime import datetime
 
@@ -47,8 +47,8 @@ def add_user():
             role=role,
             password=hashed_pw,
             status='Active',
-            created_at=datetime.utcnow(),
-            updated_at=datetime.utcnow()
+            created_at=dhaka_now(),
+            updated_at=dhaka_now()
         )
         db.session.add(new_user)
         db.session.commit()
@@ -80,7 +80,7 @@ def edit_user(id):
         if password:
             user.password = generate_password_hash(password)
             
-        user.updated_at = datetime.utcnow()
+        user.updated_at = dhaka_now()
         db.session.commit()
         flash('User updated successfully.', 'success')
         return redirect(url_for('users.manage_users'))

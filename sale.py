@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required
 from auth import admin_required
-from models import db, Sale, SaleItem, Customer, Product, CustomerLedger, CashLedger
+from models import db, Sale, SaleItem, Customer, Product, CustomerLedger, CashLedger, dhaka_now
 from datetime import datetime
 
 sale_bp = Blueprint('sale', __name__, url_prefix='/sale')
@@ -43,7 +43,7 @@ def add_sale():
             else:
                 is_cash_sale = False
 
-            sale_date = datetime.strptime(sale_date_str, '%Y-%m-%d').date() if sale_date_str else datetime.utcnow().date()
+            sale_date = datetime.strptime(sale_date_str, '%Y-%m-%d').date() if sale_date_str else dhaka_now().date()
             
             subtotal = 0.0
             for qty, price in zip(quantities, prices):
@@ -210,8 +210,8 @@ def sale_report():
     customer_id = request.args.get('customer_id')
 
     if not from_date and not to_date:
-        from_date = datetime.now().strftime('%Y-%m-%d')
-        to_date = datetime.now().strftime('%Y-%m-%d')
+        from_date = dhaka_now().strftime('%Y-%m-%d')
+        to_date = dhaka_now().strftime('%Y-%m-%d')
     
     query = Sale.query
     if from_date:

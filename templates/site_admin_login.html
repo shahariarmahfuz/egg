@@ -1,26 +1,137 @@
 {% extends "site_admin_base.html" %}
+
+{% block styles %}
+<style>
+    body {
+        background: radial-gradient(circle at center, #2b2e4a 0%, #1a1a2e 100%);
+        min-height: 100vh;
+        font-family: 'Inter', sans-serif;
+        color: #ffffff;
+    }
+    
+    /* Center the container */
+    .container-fluid.pt-4 {
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding-top: 0 !important;
+    }
+
+    .login-container {
+        width: 100%;
+        max-width: 440px;
+        padding: 15px;
+    }
+    .login-card {
+        background: #16213e;
+        border-radius: 12px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.4);
+        border: 1px solid #323d57;
+        overflow: hidden;
+    }
+    .login-header {
+        text-align: center;
+        padding: 45px 30px 25px;
+        border-bottom: 1px solid #1f2a48;
+    }
+    .login-header h3 {
+        color: #e94560;
+        font-weight: 700;
+        margin-bottom: 8px;
+        font-size: 1.6rem;
+        letter-spacing: 0.5px;
+    }
+    .login-header p {
+        color: #a0a5b1;
+        font-size: 0.95rem;
+        margin-bottom: 0;
+    }
+    .login-body {
+        padding: 20px 35px 45px;
+    }
+    .form-floating > label {
+        color: #a0a5b1;
+    }
+    .form-control {
+        background-color: #0f3460;
+        border: 1px solid #233e68;
+        color: #ffffff;
+        border-radius: 8px;
+    }
+    .form-control:focus {
+        background-color: #123f75;
+        border-color: #e94560;
+        color: #ffffff;
+        box-shadow: 0 0 0 0.25rem rgba(233, 69, 96, 0.25);
+    }
+    /* Fix floating label color when focused/filled */
+    .form-floating > .form-control:focus ~ label,
+    .form-floating > .form-control:not(:placeholder-shown) ~ label {
+        color: #e94560;
+        background: transparent;
+    }
+    .form-control::placeholder {
+        color: transparent; /* Required for floating labels */
+    }
+    .btn-login {
+        background-color: #e94560;
+        border-color: #e94560;
+        color: white;
+        border-radius: 8px;
+        padding: 12px;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+        transition: all 0.2s ease-in-out;
+        margin-top: 15px;
+    }
+    .btn-login:hover {
+        background-color: #d13d56;
+        border-color: #d13d56;
+        color: white;
+        transform: translateY(-1px);
+        box-shadow: 0 5px 15px rgba(233, 69, 96, 0.4);
+    }
+    .logo-area {
+        margin-bottom: 15px;
+    }
+    .logo-icon {
+        font-size: 2.8rem;
+        color: #e94560;
+        background: rgba(233, 69, 96, 0.1);
+        padding: 22px;
+        border-radius: 50%;
+    }
+</style>
+{% endblock %}
+
 {% block login_content %}
-<div class="row justify-content-center">
-    <div class="col-md-5">
-        <div class="card shadow-lg border-0 rounded-lg mt-5">
-            <div class="card-header bg-dark text-white text-center py-4">
-                <h3 class="font-weight-light my-2">Site Admin Login</h3>
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <div class="logo-area">
+                <i class="fas fa-terminal logo-icon"></i>
             </div>
-            <div class="card-body p-4">
-                <form method="POST" action="{{ url_for('site_admin.login') }}">
-                    <div class="form-floating mb-3">
-                        <input class="form-control" id="inputUsername" name="username" type="text" placeholder="Username" required autofocus />
-                        <label for="inputUsername">Username</label>
-                    </div>
-                    <div class="form-floating mb-3">
-                        <input class="form-control" id="inputPassword" name="password" type="password" placeholder="Password" required />
-                        <label for="inputPassword">Password</label>
-                    </div>
-                    <div class="d-grid gap-2 mt-4 mb-0">
-                        <button class="btn btn-dark btn-lg" type="submit">Login</button>
-                    </div>
-                </form>
-            </div>
+            <h3>Developer Portal</h3>
+            <p>Site Administration Access Only</p>
+        </div>
+        <div class="login-body">
+            <form method="POST" action="{{ url_for('site_admin.login') }}">
+                <div class="form-floating mb-4">
+                    <input class="form-control" id="inputUsername" name="username" type="text" placeholder="Username" required autofocus autocomplete="off" />
+                    <label for="inputUsername"><i class="fas fa-user-shield me-2"></i>Username</label>
+                </div>
+                <div class="form-floating mb-4">
+                    <input class="form-control" id="inputPassword" name="password" type="password" placeholder="Password" required />
+                    <label for="inputPassword"><i class="fas fa-key me-2"></i>Password</label>
+                </div>
+                <div class="d-grid">
+                    <button class="btn btn-login btn-lg" type="submit">
+                        Secure Login <i class="fas fa-sign-in-alt ms-2"></i>
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>

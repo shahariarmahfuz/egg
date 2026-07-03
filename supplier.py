@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required
 from auth import admin_required
-from models import db, Supplier
+from models import db, Supplier, dhaka_now
 from datetime import datetime
 
 supplier_bp = Blueprint('supplier', __name__, url_prefix='/supplier')
@@ -26,7 +26,7 @@ def add_supplier():
                 if contact_number and len(contact_number.strip()) < 7:
                     flash("Please enter a valid contact number.", "danger")
                 else:
-                    date_obj = datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else datetime.utcnow().date()
+                    date_obj = datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else dhaka_now().date()
                     new_sup = Supplier(
                         supplier_name=supplier_name,
                         address=address,

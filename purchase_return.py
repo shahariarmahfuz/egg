@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required
 from auth import admin_required
-from models import db, Purchase, PurchaseItem, Supplier, Product, PurchaseReturn, PurchaseReturnItem
+from models import db, Purchase, PurchaseItem, Supplier, Product, PurchaseReturn, PurchaseReturnItem, dhaka_now
 from datetime import datetime
 
 purchase_return_bp = Blueprint('purchase_return', __name__, url_prefix='/purchase_return')
@@ -31,7 +31,7 @@ def add_purchase_return():
                 flash("Supplier and at least one product are required.", "danger")
                 return redirect(url_for('purchase_return.add_purchase_return'))
 
-            return_date = datetime.strptime(return_date_str, '%Y-%m-%d').date() if return_date_str else datetime.utcnow().date()
+            return_date = datetime.strptime(return_date_str, '%Y-%m-%d').date() if return_date_str else dhaka_now().date()
             
             subtotal = 0.0
             for qty, price in zip(quantities, prices):

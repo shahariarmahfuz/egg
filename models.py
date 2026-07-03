@@ -1,8 +1,15 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from datetime import datetime
+from zoneinfo import ZoneInfo
 import random
 import string
+
+def dhaka_now():
+    return datetime.now(ZoneInfo("Asia/Dhaka")).replace(tzinfo=None)
+
+def dhaka_now_date():
+    return dhaka_now().date()
 
 db = SQLAlchemy()
 
@@ -13,7 +20,7 @@ class Business(db.Model):
     business_name = db.Column(db.String(150), nullable=False)
     business_slug = db.Column(db.String(150), unique=True, nullable=False)
     status = db.Column(db.String(50), default='Active')
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=dhaka_now)
 
 class Admin(UserMixin, db.Model):
     __tablename__ = 'admin'
@@ -26,8 +33,8 @@ class Admin(UserMixin, db.Model):
     password = db.Column(db.String(256), nullable=False)
     role = db.Column(db.String(50), nullable=False, default='Employee')
     status = db.Column(db.String(50), nullable=False, default='Active')
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=dhaka_now)
+    updated_at = db.Column(db.DateTime, default=dhaka_now, onupdate=dhaka_now)
 
 def generate_head_code():
     return 'EH-' + ''.join(random.choices(string.digits, k=4))
@@ -41,7 +48,7 @@ class ExpenseHead(db.Model):
     business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     head_name = db.Column(db.String(100), unique=True, nullable=False)
     head_code = db.Column(db.String(50), unique=True, nullable=False, default=generate_head_code)
-    created_date = db.Column(db.Date, default=datetime.utcnow().date)
+    created_date = db.Column(db.Date, default=dhaka_now_date)
     entries = db.relationship('ExpenseEntry', backref='expense_head', lazy=True, cascade="all, delete-orphan")
 
 class ExpenseEntry(db.Model):
@@ -50,20 +57,20 @@ class ExpenseEntry(db.Model):
     business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     invoice_no = db.Column(db.String(50), unique=True, nullable=False, default=generate_invoice_no)
     expense_head_id = db.Column(db.Integer, db.ForeignKey('expense_heads.id'), nullable=False)
-    date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
+    date = db.Column(db.Date, nullable=False, default=dhaka_now_date)
     comment = db.Column(db.Text, nullable=True)
     amount = db.Column(db.Float, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=dhaka_now)
 
 class CashOut(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
-    date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
+    date = db.Column(db.Date, nullable=False, default=dhaka_now_date)
     type = db.Column(db.String(50), nullable=False)
     comment = db.Column(db.String(255), nullable=True)
     amount = db.Column(db.Float, nullable=False)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=dhaka_now)
+    updated_at = db.Column(db.DateTime, default=dhaka_now, onupdate=dhaka_now)
 
 def generate_supplier_code():
     return 'SUP-' + ''.join(random.choices(string.digits, k=4))
@@ -81,9 +88,9 @@ class Supplier(db.Model):
     contact_number = db.Column(db.String(20), nullable=True)
     previous_balance = db.Column(db.Float, default=0.0)
     current_balance = db.Column(db.Float, default=0.0)
-    created_date = db.Column(db.Date, default=datetime.utcnow().date)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_date = db.Column(db.Date, default=dhaka_now_date)
+    created_at = db.Column(db.DateTime, default=dhaka_now)
+    updated_at = db.Column(db.DateTime, default=dhaka_now, onupdate=dhaka_now)
 
 class Product(db.Model):
     __tablename__ = 'products'
@@ -112,7 +119,7 @@ class Purchase(db.Model):
     business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     invoice_no = db.Column(db.String(50), unique=True, nullable=False, default=generate_purchase_invoice)
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'), nullable=False)
-    purchase_date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
+    purchase_date = db.Column(db.Date, nullable=False, default=dhaka_now_date)
     bill_number = db.Column(db.String(50), nullable=True)
     transport_cost = db.Column(db.Float, default=0.0)
     other_cost = db.Column(db.Float, default=0.0)
@@ -123,7 +130,7 @@ class Purchase(db.Model):
     due_amount = db.Column(db.Float, default=0.0)
     payment_method = db.Column(db.String(20), default='Cash')
     note = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=dhaka_now)
     
     supplier = db.relationship('Supplier', backref='purchases', lazy=True)
 
@@ -150,7 +157,7 @@ class PurchaseReturn(db.Model):
     return_invoice = db.Column(db.String(50), unique=True, nullable=False, default=generate_return_invoice)
     purchase_id = db.Column(db.Integer, db.ForeignKey('purchases.id'), nullable=True)
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'), nullable=False)
-    return_date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
+    return_date = db.Column(db.Date, nullable=False, default=dhaka_now_date)
     transport_cost = db.Column(db.Float, default=0.0)
     other_cost = db.Column(db.Float, default=0.0)
     discount = db.Column(db.Float, default=0.0)
@@ -160,7 +167,7 @@ class PurchaseReturn(db.Model):
     due_adjustment = db.Column(db.Float, default=0.0)
     payment_method = db.Column(db.String(20), default='Cash')
     note = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=dhaka_now)
     
     supplier = db.relationship('Supplier', backref='purchase_returns', lazy=True)
     purchase = db.relationship('Purchase', backref='purchase_returns', lazy=True)
@@ -191,9 +198,9 @@ class Customer(db.Model):
     contact_number = db.Column(db.String(20), nullable=True)
     previous_balance = db.Column(db.Float, default=0.0)
     current_balance = db.Column(db.Float, default=0.0)
-    created_date = db.Column(db.Date, default=datetime.utcnow().date)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_date = db.Column(db.Date, default=dhaka_now_date)
+    created_at = db.Column(db.DateTime, default=dhaka_now)
+    updated_at = db.Column(db.DateTime, default=dhaka_now, onupdate=dhaka_now)
 
 def generate_sale_invoice():
     return 'INV-' + ''.join(random.choices(string.digits, k=6))
@@ -204,7 +211,7 @@ class Sale(db.Model):
     business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     invoice_no = db.Column(db.String(50), unique=True, nullable=False, default=generate_sale_invoice)
     customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
-    sale_date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
+    sale_date = db.Column(db.Date, nullable=False, default=dhaka_now_date)
     bill_number = db.Column(db.String(50), nullable=True)
     transport_cost = db.Column(db.Float, default=0.0)
     labour_cost = db.Column(db.Float, default=0.0)
@@ -216,7 +223,7 @@ class Sale(db.Model):
     due_amount = db.Column(db.Float, default=0.0)
     payment_method = db.Column(db.String(20), default='Cash')
     note = db.Column(db.Text, nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=dhaka_now)
     
     customer = db.relationship('Customer', backref='sales', lazy=True)
 
@@ -246,7 +253,7 @@ class CustomerLedger(db.Model):
     debit = db.Column(db.Float, default=0.0)
     credit = db.Column(db.Float, default=0.0)
     balance = db.Column(db.Float, default=0.0)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=dhaka_now)
 
     customer = db.relationship('Customer', backref=db.backref('ledger_entries', cascade="all, delete-orphan"), lazy=True)
 
@@ -260,7 +267,7 @@ class SaleReturn(db.Model):
     return_invoice = db.Column(db.String(50), unique=True, nullable=False, default=generate_sale_return_invoice)
     sale_invoice = db.Column(db.String(50), nullable=True)
     customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
-    date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
+    date = db.Column(db.Date, nullable=False, default=dhaka_now_date)
     subtotal = db.Column(db.Float, default=0.0)
     discount = db.Column(db.Float, default=0.0)
     paid = db.Column(db.Float, default=0.0)
@@ -268,7 +275,7 @@ class SaleReturn(db.Model):
     payment_method = db.Column(db.String(50), default='Cash')
     note = db.Column(db.Text, nullable=True)
     created_by = db.Column(db.Integer, db.ForeignKey('admin.id'), nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=dhaka_now)
 
     customer = db.relationship('Customer', backref='sale_returns', lazy=True)
     admin = db.relationship('Admin', backref='sale_returns', lazy=True)
@@ -295,7 +302,7 @@ class CustomerCollection(db.Model):
     business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     voucher_no = db.Column(db.String(50), unique=True, nullable=False, default=generate_collection_voucher)
     customer_id = db.Column(db.Integer, db.ForeignKey('customers.id'), nullable=False)
-    date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
+    date = db.Column(db.Date, nullable=False, default=dhaka_now_date)
     previous_due = db.Column(db.Float, default=0.0)
     discount = db.Column(db.Float, default=0.0)
     cash_paid = db.Column(db.Float, default=0.0)
@@ -305,7 +312,7 @@ class CustomerCollection(db.Model):
     cheque_number = db.Column(db.String(100), nullable=True)
     note = db.Column(db.Text, nullable=True)
     created_by = db.Column(db.Integer, db.ForeignKey('admin.id'), nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=dhaka_now)
 
     customer = db.relationship('Customer', backref=db.backref('collections', cascade="all, delete-orphan"), lazy=True)
     admin = db.relationship('Admin', backref='collections', lazy=True)
@@ -318,9 +325,9 @@ class CashLedger(db.Model):
     description = db.Column(db.String(255), nullable=True)
     amount = db.Column(db.Float, default=0.0)
     type = db.Column(db.String(20), nullable=False) # 'In' or 'Out'
-    date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
+    date = db.Column(db.Date, nullable=False, default=dhaka_now_date)
     running_balance = db.Column(db.Float, default=0.0)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=dhaka_now)
 
 class Bank(db.Model):
     __tablename__ = 'banks'
@@ -331,14 +338,14 @@ class Bank(db.Model):
     account_number = db.Column(db.String(100), unique=True, nullable=False)
     address = db.Column(db.Text, nullable=True)
     current_balance = db.Column(db.Float, default=0.0)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=dhaka_now)
 
 class BankTransaction(db.Model):
     __tablename__ = 'bank_transactions'
     id = db.Column(db.Integer, primary_key=True)
     business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     bank_id = db.Column(db.Integer, db.ForeignKey('banks.id'), nullable=False)
-    date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
+    date = db.Column(db.Date, nullable=False, default=dhaka_now_date)
     description = db.Column(db.String(255), nullable=True)
     code = db.Column(db.String(50), nullable=True)
     name = db.Column(db.String(100), nullable=True)
@@ -346,7 +353,7 @@ class BankTransaction(db.Model):
     credit = db.Column(db.Float, default=0.0) # Deposit
     debit = db.Column(db.Float, default=0.0) # Withdrawal
     running_balance = db.Column(db.Float, default=0.0)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=dhaka_now)
 
     bank = db.relationship('Bank', backref=db.backref('transactions', cascade="all, delete-orphan"), lazy=True)
 
@@ -361,7 +368,7 @@ class SupplierPayment(db.Model):
     business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
     voucher_no = db.Column(db.String(50), unique=True, nullable=False, default=generate_supplier_payment_voucher)
     supplier_id = db.Column(db.Integer, db.ForeignKey('suppliers.id'), nullable=False)
-    date = db.Column(db.Date, nullable=False, default=datetime.utcnow().date)
+    date = db.Column(db.Date, nullable=False, default=dhaka_now_date)
     previous_due = db.Column(db.Float, default=0.0)
     discount = db.Column(db.Float, default=0.0)
     cash_paid = db.Column(db.Float, default=0.0)
@@ -371,7 +378,7 @@ class SupplierPayment(db.Model):
     cheque_number = db.Column(db.String(100), nullable=True)
     note = db.Column(db.Text, nullable=True)
     created_by = db.Column(db.Integer, db.ForeignKey('admin.id'), nullable=True)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=dhaka_now)
 
     supplier = db.relationship('Supplier', backref=db.backref('payments', cascade="all, delete-orphan"), lazy=True)
     admin = db.relationship('Admin', backref='supplier_payments', lazy=True)
@@ -387,7 +394,7 @@ class SupplierLedger(db.Model):
     debit = db.Column(db.Float, default=0.0)
     credit = db.Column(db.Float, default=0.0)
     balance = db.Column(db.Float, default=0.0)
-    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    created_at = db.Column(db.DateTime, default=dhaka_now)
 
     supplier = db.relationship('Supplier', backref=db.backref('ledger_entries', cascade="all, delete-orphan"), lazy=True)
 

@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from flask_login import login_required
 from auth import admin_required
-from models import db, ExpenseHead, ExpenseEntry
+from models import db, ExpenseHead, ExpenseEntry, dhaka_now
 from datetime import datetime
 
 expenses_bp = Blueprint('expenses', __name__, url_prefix='/expense')
@@ -16,7 +16,7 @@ def add_expense_head():
         if ExpenseHead.query.filter_by(head_name=head_name).first():
             flash('Expense Head already exists.', 'danger')
         else:
-            date_obj = datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else datetime.utcnow().date()
+            date_obj = datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else dhaka_now().date()
             new_head = ExpenseHead(head_name=head_name, created_date=date_obj)
             db.session.add(new_head)
             db.session.commit()

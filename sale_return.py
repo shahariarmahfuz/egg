@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from flask_login import login_required
 from auth import admin_required, current_user
-from models import db, SaleReturn, SaleReturnItem, Customer, Product, CustomerLedger, Sale, SaleItem
+from models import db, SaleReturn, SaleReturnItem, Customer, Product, CustomerLedger, Sale, SaleItem, dhaka_now
 from datetime import datetime
 
 sale_return_bp = Blueprint('sale_return', __name__, url_prefix='/sale_return')
@@ -69,7 +69,7 @@ def add_sale_return():
                 flash('Customer not found.', 'danger')
                 return redirect(url_for('sale_return.add_sale_return'))
 
-            return_date = datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else datetime.utcnow().date()
+            return_date = datetime.strptime(date_str, '%Y-%m-%d').date() if date_str else dhaka_now().date()
             
             new_return = SaleReturn(
                 sale_invoice=sale_invoice,

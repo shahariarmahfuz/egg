@@ -1,10 +1,34 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from sqlalchemy import or_
 from flask_login import login_required
 from auth import admin_required
 from models import db, Customer, CustomerLedger, dhaka_now
 from datetime import datetime
 
 customer_bp = Blueprint('customer', __name__, url_prefix='/customer')
+
+@login_required
+@customer_bp.route('/search_customer', methods=['GET'])
+def search_customer():
+    q = request.args.get('q', '').strip()
+    if not q or len(q) < 2:
+        return jsonify([])
+    
+    customers = Customer.query.filter(
+        or_(
+            Customer.customer_name.ilike(f'%{q}%'),
+            Customer.customer_code.ilike(f'%{q}%'),
+            Customer.contact_number.ilike(f'%{q}%')
+        )
+    ).limit(20).all()
+    
+    results = []
+    for c in customers:
+        results.append({
+            'id': c.id,
+            'text': f"{c.customer_name} ({c.contact_number or 'N/A'}) - {c.customer_code}"
+        })
+    return jsonify(results)
 
 @login_required
 @customer_bp.route('/add_customer', methods=['GET', 'POST'])

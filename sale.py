@@ -9,7 +9,6 @@ sale_bp = Blueprint('sale', __name__, url_prefix='/sale')
 @login_required
 @sale_bp.route('/add_sale', methods=['GET', 'POST'])
 def add_sale():
-    customers = Customer.query.all()
     if request.method == 'POST':
         try:
             customer_id = request.form.get('customer_id')
@@ -136,7 +135,7 @@ def add_sale():
             db.session.rollback()
             flash(f"Error saving sale: {e}", "danger")
 
-    return render_template('sale_form.html', action="Add", customers=customers)
+    return render_template('sale_form.html', action="Add")
 
 
 @sale_bp.route('/api/get_customer/<int:customer_id>')

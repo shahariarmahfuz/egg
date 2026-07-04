@@ -1,10 +1,34 @@
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
+from sqlalchemy import or_
 from flask_login import login_required
 from auth import admin_required
 from models import db, Supplier, dhaka_now
 from datetime import datetime
 
 supplier_bp = Blueprint('supplier', __name__, url_prefix='/supplier')
+
+@login_required
+@supplier_bp.route('/search_supplier', methods=['GET'])
+def search_supplier():
+    q = request.args.get('q', '').strip()
+    if not q or len(q) < 2:
+        return jsonify([])
+    
+    suppliers = Supplier.query.filter(
+        or_(
+            Supplier.supplier_name.ilike(f'%{q}%'),
+            Supplier.supplier_code.ilike(f'%{q}%'),
+            Supplier.contact_number.ilike(f'%{q}%')
+        )
+    ).limit(20).all()
+    
+    results = []
+    for s in suppliers:
+        results.append({
+            'id': s.id,
+            'text': f"{s.supplier_name} ({s.contact_number or 'N/A'}) - {s.supplier_code}"
+        })
+    return jsonify(results)
 
 @login_required
 @supplier_bp.route('/add_supplier', methods=['GET', 'POST'])

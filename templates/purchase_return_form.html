@@ -22,11 +22,7 @@
             <div class="row mb-3">
                 <div class="col-md-3">
                     <label for="supplier_id" class="form-label">Supplier <span class="text-danger">*</span></label>
-                    <select class="form-select select2" id="supplier_id" name="supplier_id" required>
-                        <option value="" disabled selected>Select Supplier</option>
-                        {% for sup in suppliers %}
-                        <option value="{{ sup.id }}">{{ sup.supplier_name }}</option>
-                        {% endfor %}
+                    <select class="form-select select2-ajax" id="supplier_id" name="supplier_id" required data-url="{{ url_for('supplier.search_supplier') }}" data-placeholder="Select Supplier">
                     </select>
                 </div>
                 <div class="col-md-3">
@@ -133,8 +129,6 @@
 <script>
 $(document).ready(function() {
     document.getElementById('return_date').valueAsDate = new Date();
-    $('.select2').select2({ theme: 'bootstrap-5' });
-
     $('#supplier_id').on('change', function() {
         let supId = $(this).val();
         if(supId) {

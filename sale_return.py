@@ -136,8 +136,7 @@ def add_sale_return():
             flash(f'An error occurred: {str(e)}', 'danger')
             return redirect(url_for('sale_return.add_sale_return'))
 
-    customers = Customer.query.order_by(Customer.customer_name).all()
-    return render_template('add_sale_return.html', customers=customers, action="Add")
+    return render_template('add_sale_return.html', action="Add")
 
 @sale_return_bp.route('/manage_sale_return')
 @login_required

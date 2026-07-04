@@ -9,7 +9,6 @@ purchase_return_bp = Blueprint('purchase_return', __name__, url_prefix='/purchas
 @login_required
 @purchase_return_bp.route('/add_purchase_return', methods=['GET', 'POST'])
 def add_purchase_return():
-    suppliers = Supplier.query.all()
     if request.method == 'POST':
         try:
             supplier_id = request.form.get('supplier_id')
@@ -90,7 +89,7 @@ def add_purchase_return():
             db.session.rollback()
             flash(f"Error saving return: {e}", "danger")
 
-    return render_template('purchase_return_form.html', action="Add", suppliers=suppliers)
+    return render_template('purchase_return_form.html', action="Add")
 
 @purchase_return_bp.route('/api/get_purchase/<invoice>')
 @login_required

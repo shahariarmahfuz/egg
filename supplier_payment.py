@@ -100,9 +100,9 @@ def payment():
             return redirect(url_for('supplier_payment.payment'))
             
             
-    suppliers = Supplier.query.order_by(Supplier.supplier_name).all()
     pre_supplier_id = request.args.get('supplier_id')
-    return render_template('payment_form.html', suppliers=suppliers, action="Add", pre_supplier_id=pre_supplier_id)
+    pre_supplier = Supplier.query.get(pre_supplier_id) if pre_supplier_id else None
+    return render_template('payment_form.html', action="Add", pre_supplier=pre_supplier)
 
 @supplier_payment_bp.route('/manage_payment')
 @login_required

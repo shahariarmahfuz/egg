@@ -9,7 +9,6 @@ purchase_bp = Blueprint('purchase', __name__, url_prefix='/purchase')
 @login_required
 @purchase_bp.route('/add_purchase', methods=['GET', 'POST'])
 def add_purchase():
-    suppliers = Supplier.query.all()
     if request.method == 'POST':
         try:
             supplier_id = request.form.get('supplier_id')
@@ -102,7 +101,7 @@ def add_purchase():
             db.session.rollback()
             flash(f"Error saving purchase: {e}", "danger")
 
-    return render_template('purchase_form.html', action="Add", suppliers=suppliers)
+    return render_template('purchase_form.html', action="Add")
 
 
 @purchase_bp.route('/api/get_supplier/<int:supplier_id>')

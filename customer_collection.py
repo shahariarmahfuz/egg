@@ -170,8 +170,7 @@ def collection():
             flash(f"Error saving collection: {e}", "danger")
             return redirect(url_for('customer_collection.collection'))
             
-    customers = Customer.query.order_by(Customer.customer_name).all()
-    return render_template('collection_form.html', customers=customers, action="Add")
+    return render_template('collection_form.html', action="Add")
 
 @customer_collection_bp.route('/manage_collection')
 @login_required

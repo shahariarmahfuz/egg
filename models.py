@@ -37,6 +37,8 @@ class Admin(UserMixin, db.Model):
     role = db.Column(db.String(50), nullable=False, default='Employee')
     status = db.Column(db.String(50), nullable=False, default='Active')
     avatar_seed = db.Column(db.String(50), nullable=True, default=generate_avatar_seed)
+    avatar_url = db.Column(db.String(255), nullable=True)
+    avatar_public_id = db.Column(db.String(255), nullable=True)
     created_at = db.Column(db.DateTime, default=dhaka_now)
     updated_at = db.Column(db.DateTime, default=dhaka_now, onupdate=dhaka_now)
 

@@ -160,7 +160,6 @@ def search_product():
             Product.product_name.ilike(f'%{term}%'),
             Product.barcode.ilike(f'%{term}%')
         ),
-        Product.current_stock > 0,
         Product.status == 'Active'
     ).limit(10).all()
     results = [{'id': p.id, 'text': f"{p.product_name} ({p.product_code}) - Stock: {p.current_stock}", 'code': p.product_code, 'name': p.product_name, 'stock': p.current_stock, 'price': p.selling_price} for p in prods]

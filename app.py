@@ -141,32 +141,24 @@ def create_app():
                     except BaseException as e:
                         print(f"Init warning: {e}")
                 
-                # 1. Apply existing migrations first
+                # 1. Ensure all tables exist from models first.
+                #    This prevents migrations from trying to ALTER
+                #    tables that don't exist yet on a fresh database.
+                db.create_all()
+                
+                # 2. Apply existing migrations (all are idempotent,
+                #    so they safely skip work already done by create_all).
                 try:
                     flask_migrate.upgrade()
                 except BaseException as e:
-                    print(f"Initial upgrade warning: {e}")
+                    print(f"Upgrade warning: {e}")
                 
-                # 2. Create any missing tables not covered by migrations
-                db.create_all()
-                
-                # 3. Stamp to ensure alembic_version exists and is current
+                # 3. Stamp to ensure alembic_version is at the
+                #    current head revision.
                 try:
                     flask_migrate.stamp()
                 except BaseException as e:
                     print(f"Stamp warning: {e}")
-                
-                # 4. Generate new migration for any unmigrated model changes
-                try:
-                    flask_migrate.migrate(message="Automatic startup migration")
-                except BaseException as e:
-                    print(f"Migrate warning: {e}")
-                
-                # 5. Apply the newly generated migration (e.g. column alters)
-                try:
-                    flask_migrate.upgrade()
-                except BaseException as e:
-                    print(f"Final upgrade warning: {e}")
                     
             except BaseException as e:
                 print(f"Migration phase skipped/error: {e}")

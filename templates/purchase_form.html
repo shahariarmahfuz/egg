@@ -141,7 +141,7 @@ $(document).ready(function() {
     $('#supplier_id').on('change', function() {
         let supId = $(this).val();
         if(supId) {
-            $.get('/purchase/api/get_supplier/' + supId, function(data) {
+            $.get('{{ url_for("purchase.get_supplier", supplier_id=0) }}'.replace('/0', '/' + supId), function(data) {
                 $('#sup_address').val(data.address);
                 $('#sup_contact').val(data.contact);
             });

@@ -89,7 +89,7 @@ $(document).ready(function() {
     $('#supplier_id').on('change', function() {
         let cid = $(this).val();
         if(cid) {
-            $.get('/supplier_payment/api/get_supplier_due/' + cid, function(data) {
+            $.get('{{ url_for("supplier_payment.get_supplier_due", supplier_id=0) }}'.replace('/0', '/' + cid), function(data) {
                 prevDue = parseFloat(data.due) || 0;
                 $('#previous_due').val(prevDue.toFixed(2));
                 calculateTotals();

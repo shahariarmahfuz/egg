@@ -93,6 +93,7 @@
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
 $(document).ready(function() {
+    $.ajaxSetup({ cache: false });
     document.getElementById('date').valueAsDate = new Date();
     $('.select2').select2({ theme: 'bootstrap-5' });
 
@@ -101,7 +102,7 @@ $(document).ready(function() {
     $('#customer_id').on('change', function() {
         let cid = $(this).val();
         if(cid) {
-            $.get('/customer_collection/api/get_customer_due/' + cid, function(data) {
+            $.get('{{ url_for("customer_collection.get_customer_due", customer_id=0) }}'.replace('/0', '/' + cid), function(data) {
                 prevDue = parseFloat(data.due) || 0;
                 let totalCollected = parseFloat(data.total_collected) || 0;
 

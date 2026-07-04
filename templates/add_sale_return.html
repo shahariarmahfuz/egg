@@ -115,7 +115,7 @@ $(document).ready(function() {
         calculateTotals();
         
         if(cid) {
-            $.get('/sale_return/api/get_sales/' + cid, function(data) {
+            $.get('{{ url_for("sale_return.get_sales", customer_id=0) }}'.replace('/0', '/' + cid), function(data) {
                 $('#sale_invoice').empty().append('<option value="" disabled selected>Select Invoice</option>');
                 data.forEach(function(s) {
                     $('#sale_invoice').append('<option value="'+s.invoice_no+'">'+s.invoice_no+' ('+s.date+')</option>');
@@ -131,7 +131,7 @@ $(document).ready(function() {
         calculateTotals();
         
         if(inv) {
-            $.get('/sale_return/api/get_sale_items/' + inv, function(data) {
+            $.get('{{ url_for("sale_return.get_sale_items", invoice_no="dummy_inv") }}'.replace('dummy_inv', inv), function(data) {
                 if(data.length === 0) {
                     alert("No products available to return for this invoice.");
                     return;

@@ -138,7 +138,7 @@ $(document).ready(function() {
     $('#supplier_id').on('change', function() {
         let supId = $(this).val();
         if(supId) {
-            $.get('/purchase/api/get_supplier/' + supId, function(data) {
+            $.get('{{ url_for("purchase.get_supplier", supplier_id=0) }}'.replace('/0', '/' + supId), function(data) {
                 $('#sup_address').val(data.address);
                 $('#sup_contact').val(data.contact);
             });
@@ -148,7 +148,7 @@ $(document).ready(function() {
     $('#btn_search_invoice').click(function() {
         let inv = $('#search_invoice').val();
         if(!inv) return;
-        $.get('/purchase_return/api/get_purchase/' + inv, function(data) {
+        $.get('{{ url_for("purchase_return.get_purchase", invoice="dummy_inv") }}'.replace('dummy_inv', inv), function(data) {
             if(data.error) {
                 alert(data.error);
                 return;

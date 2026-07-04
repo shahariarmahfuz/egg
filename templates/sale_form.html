@@ -139,7 +139,7 @@ $(document).ready(function() {
     $('#customer_id').on('change', function() {
         let cid = $(this).val();
         if(cid) {
-            $.get('/sale/api/get_customer/' + cid, function(data) {
+            $.get('{{ url_for("sale.get_customer", customer_id=0) }}'.replace('/0', '/' + cid), function(data) {
                 $('#cust_address').val(data.address);
                 $('#cust_contact').val(data.contact);
             });

@@ -145,6 +145,26 @@ def edit_user(business_id, user_id):
     password = request.form.get('password')
     if password:
         user.password = generate_password_hash(password)
+        
+    avatar_url = request.form.get('avatar_url')
+    if avatar_url is not None:
+        avatar_url = avatar_url.strip()
+        if not avatar_url:
+            user.avatar_url = None
+        else:
+            import re
+            regex = re.compile(
+                r'^https?://'
+                r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+[A-Z]{2,6}\.?|'
+                r'localhost|'
+                r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})'
+                r'(?::\d+)?'
+                r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+            if regex.search(avatar_url):
+                user.avatar_url = avatar_url
+            else:
+                flash('Invalid Avatar URL format ignored.', 'warning')
+
     db.session.commit()
     flash('User updated.', 'success')
     return redirect(url_for('site_admin.manage_users', business_id=business_id))

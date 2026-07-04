@@ -87,9 +87,20 @@ def business_status(id, status):
 @site_admin_required
 def delete_business(id):
     business = Business.query.get_or_404(id)
-    db.session.delete(business)
-    db.session.commit()
-    flash('Business deleted.', 'success')
+    try:
+        # Safely delete all related records that have business_id
+        for table in reversed(db.metadata.sorted_tables):
+            if 'business_id' in table.columns:
+                db.session.execute(table.delete().where(table.c.business_id == id))
+                
+        # Now delete the business
+        db.session.delete(business)
+        db.session.commit()
+        flash('Business deleted successfully.', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting business: {str(e)}', 'danger')
+        
     return redirect(url_for('site_admin.dashboard'))
 
 @site_admin_bp.route('/users/<int:business_id>')

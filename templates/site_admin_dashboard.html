@@ -33,7 +33,7 @@
                     {% else %}
                     <a href="{{ url_for('site_admin.business_status', id=b.id, status='activate') }}" class="btn btn-sm btn-success">Activate</a>
                     {% endif %}
-                    <a href="{{ url_for('site_admin.delete_business', id=b.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure?')">Delete</a>
+                    <a href="{{ url_for('site_admin.delete_business', id=b.id) }}" class="btn btn-sm btn-danger" onclick="return confirmDelete(event, this.href)">Delete</a>
                 </td>
             </tr>
 
@@ -94,4 +94,26 @@
         </form>
     </div>
 </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+function confirmDelete(event, url) {
+    event.preventDefault();
+    if(confirm("Are you sure you want to delete this business?")) {
+        if(confirm("This action will permanently delete all business data.")) {
+            if(confirm("This action cannot be undone. Continue?")) {
+                let text = prompt("Type DELETE to confirm");
+                if (text === "DELETE") {
+                    window.location.href = url;
+                } else if (text !== null) {
+                    alert("Deletion cancelled. You didn't type DELETE.");
+                }
+            }
+        }
+    }
+    return false;
+}
+</script>
 {% endblock %}
